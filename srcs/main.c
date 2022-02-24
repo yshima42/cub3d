@@ -31,16 +31,17 @@ void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
 
 void line_pixel_put(t_data *screen, t_ppos *ppos, int color)
 {
-	int i;
-	int j;
+	int x;
+	int y;
+	int len;
 
-	i = ppos->px;
-	j = ppos->py;
-	while (i < ppos->px + 30)
+
+	for (len = 0; len < 30; len++)
 	{
-		my_mlx_pixel_put(screen, i, j, color);
-		i++;
-		j += 1;	
+		x = ppos->px + len * cos(ppos->pa);
+		y = ppos->py + len * sin(ppos->pa);
+
+		my_mlx_pixel_put(screen, x, y, color);
 	}
 }
 
@@ -123,7 +124,7 @@ int deal_key(int key, t_conf *conf)
 		conf->ppos.pa += 0.1;
 		if (conf->ppos.pa > 2 * PI)
 		{
-			conf->ppos.pa += 2 * PI;
+			conf->ppos.pa -= 2 * PI;
 		}
 		conf->ppos.pdx = cos(conf->ppos.pa) * 5;
 		conf->ppos.pdy = sin(conf->ppos.pa) * 5;
