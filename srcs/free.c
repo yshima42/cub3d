@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 16:09:27 by yshimazu          #+#    #+#             */
-/*   Updated: 2021/09/30 16:10:07 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/23 20:36:00 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	**ft_arrayfree(char **tab)
 	return (NULL);
 }
 
-int	free_all_exit(t_conf *conf)
+/* int	free_all_exit(t_conf *conf)
 {
 	if (conf->map.map)
 		conf->map.map = ft_arrayfree(conf->map.map);
@@ -52,3 +52,4 @@ int	free_all_exit(t_conf *conf)
 	exit (EXIT_SUCCESS);
 	return (0);
 }
+ */
