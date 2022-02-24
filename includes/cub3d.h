@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/23 23:21:54 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/24 13:59:46 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdint.h>
 # include <math.h>
+# include <stdbool.h>
 
 # include "../libft/libft.h"
 # include "../minilibx-linux/mlx.h"

@@ -29,12 +29,36 @@ void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
 	}
 }
 
+void circle_pixel_put(t_data *screen, unsigned int px, unsigned int py, int radius, int color)
+{
+	unsigned int x;
+	unsigned int y;
+	int dx;
+	int dy;
+
+	y = 0;
+	while(y < WINDOW_HEIGHT)
+	{
+		x = 0;
+		while (x < WINDOW_WIDTH)
+		{
+			dx = (int)x - (int)px;
+			dy = (int)y - (int)py;
+			if ((dx * dx) + (dy * dy) <= radius * radius)
+			{
+				my_mlx_pixel_put(screen, x, y, color);
+			}
+			x++;
+		}
+		y++;
+	}
+}
+
 void line_pixel_put(t_data *screen, t_ppos *ppos, int color)
 {
 	int x;
 	int y;
 	int len;
-
 
 	for (len = 0; len < 30; len++)
 	{
@@ -47,7 +71,7 @@ void line_pixel_put(t_data *screen, t_ppos *ppos, int color)
 
 void putPlayer(t_conf *conf)
 {
-	squre_pixel_put(&conf->screen, conf->ppos.px, conf->ppos.py, 8, 0x00FF0000);
+	circle_pixel_put(&conf->screen, conf->ppos.px, conf->ppos.py, 3, 0x00FF0000);
 	line_pixel_put(&conf->screen, &conf->ppos, 0x00FF0000);
 
 }
@@ -86,25 +110,35 @@ void drawMinimap(t_conf *conf)
 	mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img, 0, 0);
 }
 
+bool hasWallAt(char **map, int x, int y)
+{
+	int mapIndexX = x / CHIP_SIZE;
+	int mapIndexY = y / CHIP_SIZE;
+
+	return map[mapIndexY][mapIndexX] != '0';
+}
+
 int deal_key(int key, t_conf *conf)
 {
-	(void)key;
-	(void)conf;
 	if (key == A_KEY)
 	{
-		conf->ppos.px -= PLAYER_SIZE;
+		if (!hasWallAt(conf->map.map, conf->ppos.px - PLAYER_SIZE, conf->ppos.py))
+			conf->ppos.px -= PLAYER_SIZE;
 	}
 	else if (key == D_KEY)
 	{
-		conf->ppos.px += PLAYER_SIZE;
+		if (!hasWallAt(conf->map.map, conf->ppos.px + PLAYER_SIZE, conf->ppos.py))
+			conf->ppos.px += PLAYER_SIZE;
 	}
 	else if (key == W_KEY)
 	{
-		conf->ppos.py -= PLAYER_SIZE;
+		if (!hasWallAt(conf->map.map, conf->ppos.px, conf->ppos.py - PLAYER_SIZE))
+			conf->ppos.py -= PLAYER_SIZE;
 	}
 	else if (key == S_KEY)
 	{
-		conf->ppos.py += PLAYER_SIZE;
+		if (!hasWallAt(conf->map.map, conf->ppos.px, conf->ppos.py + PLAYER_SIZE))
+			conf->ppos.py += PLAYER_SIZE;
 	}
 	else if (key == LEFT_KEY)
 	{
