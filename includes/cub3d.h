@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/25 17:45:00 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/26 01:14:53 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@
 # define LEFT_KEY 65361
 # define RIGHT_KEY 65363
 
+# define ROTATE_SPEED 1/30
+
 # define WINDOW_WIDTH 1500
 # define WINDOW_HEIGHT 1000
 
@@ -87,18 +89,28 @@ typedef struct s_point {
 	double y;
 }				t_point;
 
+typedef enum s_facing {
+	DEFAULT,
+	DOWN_RIGHT,
+	DOWN_LEFT,
+	UP_LEFT,
+	UP_RIGHT,
+}	t_facing;
+
 typedef struct s_ray {
-	double rayAngle;
-	double wallHitX;
-	double wallHitY;
-	double distance;
+	double angle;
+	double xintercept;
+	double yintercept;
+	double xstep;
+	double ystep;
+	t_point horzWallHit;
+	t_point vertWallHit;
+	double horzDistance;
+	double vertDistance;
 	int wasHitVertical;
-	int isRayFacingUp;
-	int isRayFacingDown;
-	int isRayFacingLeft;
-	int isRayFacingRight;
+	t_facing facingTo;
 	int wallHitContent;
-}				t_ray[NUM_RAYS];
+}				t_ray;
 
 typedef struct s_player {
 	t_point pos;
