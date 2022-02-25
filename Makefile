@@ -32,7 +32,7 @@ $(MLX_PATH):
 
 $(NAME):		$(SRCS_OBJS)
 				$(LIBFTMAKE)
-				$(MLXMAKE)
+				#$(MLXMAKE)
 				$(CC) $(CFLAGS) $(SRCS_OBJS) $(LIBFTFLAG) -o $(NAME) -I/usr/X11/include -Lminilibx-linux -lmlx_Darwin -L/usr/X11/include/../lib -lXext -lX11
 
 lib:

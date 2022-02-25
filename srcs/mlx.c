@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 22:03:22 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/23 20:40:12 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/25 16:07:38 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	array_to_screan(char **map, t_conf *conf)
 		{
 			conf->screen.img = chr_to_imgptr(map[y][x], conf);
 			mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img,
-				CHIP_SIZE * x, CHIP_SIZE * y);
+				TILE_SIZE * x, TILE_SIZE * y);
 			x++;
 		}
 		y++;
@@ -38,24 +38,51 @@ void	display_mlx(t_conf *conf)
 	int	size_y;
 
 	chip_set(conf);
-	size_y = (int)conf->map.height * CHIP_SIZE;
-	size_x = (int)conf->map.width * CHIP_SIZE;
+	size_y = (int)conf->map.height * TILE_SIZE;
+	size_x = (int)conf->map.width * TILE_SIZE;
 	if (conf->map.height > SCREEN_SIZE)
-		size_y = SCREEN_SIZE * (CHIP_SIZE + 1);
+		size_y = SCREEN_SIZE * (TILE_SIZE + 1);
 	if (conf->map.width > SCREEN_SIZE)
-		size_x = SCREEN_SIZE * (CHIP_SIZE + 1);
+		size_x = SCREEN_SIZE * (TILE_SIZE + 1);
 	array_to_screan(conf->map.map, conf);
+}
+
+int	free_all_exit(t_conf *conf)
+{
+	/* if (conf->map.map)
+		conf->map.map = ft_arrayfree(conf->map.map);
+	if (conf->images.empty)
+		mlx_destroy_image(conf->mlx, conf->images.empty);
+	if (conf->images.wall)
+		mlx_destroy_image(conf->mlx, conf->images.wall);
+	if (conf->images.collectible)
+		mlx_destroy_image(conf->mlx, conf->images.collectible);
+	if (conf->images.exit)
+		mlx_destroy_image(conf->mlx, conf->images.exit);
+	if (conf->images.player)
+		mlx_destroy_image(conf->mlx, conf->images.player);
+	if (conf->win_ptr)
+		mlx_destroy_window(conf->mlx_ptr, conf->win_ptr);
+	if (conf->mlx_ptr)
+	{
+		mlx_destroy_display(conf->mlx_ptr);
+		mlx_loop_end(conf->mlx_ptr);
+		free(conf->mlx_ptr);
+	} */
+	(void)conf;
+	exit (EXIT_SUCCESS);
+	return (0);
 }
 
 int	expose(t_conf *conf)
 {
-	array_to_screan(conf->map.map, conf);
+	render(conf);
+	
 	return (0);
 }
 
 void	hook_loop_mlx(t_conf *conf)
 {
-	//mlx_hook(conf->win_ptr, 33, 1L << 17, free_all_exit, conf);
+	mlx_hook(conf->win_ptr, 33, 1L << 17, free_all_exit, conf);
 	mlx_hook(conf->win_ptr, 12, 1L << 15, expose, conf);
-	mlx_loop(conf->mlx_ptr);
 }

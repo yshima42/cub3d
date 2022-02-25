@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 22:03:22 by yshimazu          #+#    #+#             */
-/*   Updated: 2021/10/05 14:50:48 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:38:11 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	array_to_screan(char **map, t_conf *conf)
 		{
 			img_ptr = chr_to_imgptr(map[y + scroll_y][x + scroll_x], conf);
 			mlx_put_image_to_window(conf->mlx, conf->win, img_ptr,
-				CHIP_SIZE * x, CHIP_SIZE * y);
+				TILE_SIZE * x, TILE_SIZE * y);
 			x++;
 		}
 		y++;
@@ -72,12 +72,12 @@ void	display_mlx(t_conf *conf)
 		error_mlx(conf);
 	chip_set(conf);
 	chip_set2(conf);
-	size_y = (int)conf->map.height * CHIP_SIZE;
-	size_x = (int)conf->map.width * CHIP_SIZE;
+	size_y = (int)conf->map.height * TILE_SIZE;
+	size_x = (int)conf->map.width * TILE_SIZE;
 	if (conf->map.height > SCREAN_SIZE)
-		size_y = SCREAN_SIZE * (CHIP_SIZE + 1);
+		size_y = SCREAN_SIZE * (TILE_SIZE + 1);
 	if (conf->map.width > SCREAN_SIZE)
-		size_x = SCREAN_SIZE * (CHIP_SIZE + 1);
+		size_x = SCREAN_SIZE * (TILE_SIZE + 1);
 	conf->win = mlx_new_window(conf->mlx, size_x,
 			size_y, "so_long");
 	if (!conf->mlx)

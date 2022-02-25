@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/24 13:59:46 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/25 17:45:00 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,39 @@
 # include "../libft/libft.h"
 # include "../minilibx-linux/mlx.h"
 
-typedef struct s_player
-{
-	int		pos_y;
-	int		pos_x;
-	size_t	n_steps;
-	size_t	collectibles;
-}	t_player;
+
+# define VALID_CHAR 		"01CEP"
+
+# define IMG_EMPTY 			"images/empty.xpm"
+# define IMG_WALL 			"images/wall.xpm"
+# define IMG_COLLECTIBLE	"images/coin_colored.xpm"
+# define IMG_EXIT 			"images/exit.xpm"
+# define IMG_PLAYER 		"images/player1.xpm"
+# define IMG_PLAYER_2		"images/player2.xpm"
+
+# define MINIMAP_SCALE 1 
+# define TILE_SIZE 			32 * MINIMAP_SCALE
+# define SCREEN_SIZE 		20
+# define PLAYER_SIZE 		8 * MINIMAP_SCALE
+
+#define FOV_ANGLE (60 * (M_PI / 180))
+
+#define WALL_STRIP_WIDTH 4
+#define NUM_RAYS 32//WINDOW_WIDTH / WALL_STRIP_WIDTH
+
+# define ESC_KEY 65307
+# define W_KEY 119
+# define A_KEY 97
+# define S_KEY 115
+# define D_KEY 100
+# define LEFT_KEY 65361
+# define RIGHT_KEY 65363
+
+# define WINDOW_WIDTH 1500
+# define WINDOW_HEIGHT 1000
+
+# define MINIMAP_WIDTH 750
+# define MINIMAP_HEIGHT 1000
 
 typedef struct s_map
 {
@@ -56,52 +82,41 @@ typedef struct	s_data {
 	int		endian;
 }				t_data;
 
-typedef struct s_ppos {
-	double px;
-	double py;
+typedef struct s_point {
+	double x;
+	double y;
+}				t_point;
+
+typedef struct s_ray {
+	double rayAngle;
+	double wallHitX;
+	double wallHitY;
+	double distance;
+	int wasHitVertical;
+	int isRayFacingUp;
+	int isRayFacingDown;
+	int isRayFacingLeft;
+	int isRayFacingRight;
+	int wallHitContent;
+}				t_ray[NUM_RAYS];
+
+typedef struct s_player {
+	t_point pos;
 	double pdx;
 	double pdy;
-	double pa;
-}	t_ppos;
+	double angle;
+}	t_player;
 
 typedef struct s_conf {
 	void		*mlx_ptr;
 	void		*win_ptr;
-	t_ppos		ppos;
+	t_player	player;
 	t_map		map;
 	t_images	images;
 	t_data		screen;
 }				t_conf;
 
 
-# define VALID_CHAR 		"01CEP"
-
-# define IMG_EMPTY 			"images/empty.xpm"
-# define IMG_WALL 			"images/wall.xpm"
-# define IMG_COLLECTIBLE	"images/coin_colored.xpm"
-# define IMG_EXIT 			"images/exit.xpm"
-# define IMG_PLAYER 		"images/player1.xpm"
-# define IMG_PLAYER_2		"images/player2.xpm"
-
-# define CHIP_SIZE 			32
-# define SCREEN_SIZE 		20
-# define PLAYER_SIZE 		8
-
-# define ESC_KEY 65307
-# define W_KEY 119
-# define A_KEY 97
-# define S_KEY 115
-# define D_KEY 100
-# define LEFT_KEY 65361
-# define RIGHT_KEY 65363
-
-# define WINDOW_WIDTH 1500
-# define WINDOW_HEIGHT 1000
-
-# define MINIMAP_WIDTH 750
-# define MINIMAP_HEIGHT 1000
-
-# define PI 3.1415926535
 
 //utils.c
 void	array_loop(char **map, t_conf *conf, char *f(char c, t_conf *conf));
@@ -139,5 +154,8 @@ void	*chr_to_imgptr(char c, t_conf *conf);
 void	chip_set(t_conf *conf);
 void	step_counter(t_conf *conf);
 void	size_check(t_conf *conf);
+
+//main.c
+void render(t_conf *conf);
 
 #endif

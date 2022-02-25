@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 00:24:18 by yshimazu          #+#    #+#             */
-/*   Updated: 2021/10/03 00:24:19 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:38:07 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	initialize_conf2(t_conf *conf)
 	conf->images.enemy = NULL;
 	conf->images.enemy2 = NULL;
 	conf->images.uni = NULL;
-	conf->images.size = CHIP_SIZE;
+	conf->images.size = TILE_SIZE;
 	conf->player.pos_y = 0;
 	conf->player.pos_x = 0;
 	conf->player.n_steps = 0;

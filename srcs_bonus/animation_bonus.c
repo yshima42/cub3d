@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 00:21:10 by yshimazu          #+#    #+#             */
-/*   Updated: 2021/10/05 14:51:27 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/25 14:38:09 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	chip_ani(int pos_y, int pos_x, void *img_ptr, t_conf *conf)
 	scroll_y = (conf->player.pos_y / SCREAN_SIZE) * SCREAN_SIZE;
 	scroll_x = (conf->player.pos_x / SCREAN_SIZE) * SCREAN_SIZE;
 	mlx_put_image_to_window(conf->mlx, conf->win, img_ptr,
-		CHIP_SIZE * (pos_x - scroll_x), CHIP_SIZE * (pos_y - scroll_y));
+		TILE_SIZE * (pos_x - scroll_x), TILE_SIZE * (pos_y - scroll_y));
 }
 
 int	animation(t_conf *conf)
