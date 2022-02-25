@@ -250,6 +250,8 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 		wallHit = ray->vertWallHit;
 	else
 		wallHit = ray->horzWallHit;
+
+	printf("x: %f\ny: %f", wallHit.x, wallHit.y);
 	
 	line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, wallHit, 0x00FFFF00);
 }
@@ -260,13 +262,13 @@ void castAllRays(t_conf *conf) {
 	t_ray rays[NUM_RAYS];
 
 	int stripId = 0;
-	while (stripId < NUM_RAYS)
-	{
+	/* while (stripId < NUM_RAYS)
+	{ */
 		rayAngle += FOV_ANGLE / NUM_RAYS;
 		rays[stripId].angle = rayAngle;
 		castRay(conf, &(rays[stripId]), conf->player);
 		stripId++;
-	}
+	/* } */
 }
 
 void render(t_conf *conf)
