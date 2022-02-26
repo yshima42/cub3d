@@ -11,12 +11,15 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-bool hasWallAt(char **map, int x, int y)
+bool hasWallAt(t_map map, int x, int y)
 {
-	int mapIndexX = x / TILE_SIZE;
-	int mapIndexY = y / TILE_SIZE;
+	size_t mapIndexX = floor(x / TILE_SIZE);
+	size_t mapIndexY = floor(y / TILE_SIZE);
 
-	return map[mapIndexY][mapIndexX] != '0';
+	if (mapIndexX > map.width || mapIndexY > map.height)
+		return true;
+	else
+		return map.map[mapIndexY][mapIndexX] != '0';
 }
 void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
 {
@@ -159,8 +162,8 @@ double distanceBetweenPoints(t_point start, t_point end)
 	return sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
 }
 
-void castRay(t_conf *conf, t_ray *ray, const t_player player)
-{	
+t_point findHorzWallPoint(t_conf *conf, t_ray *ray, const t_player player)
+{
 	int foundHorzWallHit = false;
 	setFacingTo(ray);
 	ray->yintercept = floor(player.pos.y / TILE_SIZE) * TILE_SIZE;
@@ -177,8 +180,8 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 		ray->xstep *= -1;
 	if ((ray->facingTo == UP_RIGHT || ray->facingTo == DOWN_RIGHT) && ray->xstep < 0)
 		ray->xstep *= -1;
-	printf("ystep: %f\n", ray->ystep);
-	printf("xstep: %f\n", ray->xstep);
+	/* printf("ystep: %f\n", ray->ystep);
+	printf("xstep: %f\n", ray->xstep); */
 
 	double nextHorzTouchX = ray->xintercept;
 	double nextHorzTouchY = ray->yintercept;
@@ -188,7 +191,7 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 	{
 		if (ray->facingTo == UP_LEFT || ray->facingTo == UP_RIGHT)
 			nextHorzTouchY--;
-		if (hasWallAt(conf->map.map, nextHorzTouchX, nextHorzTouchY))
+		if (hasWallAt(conf->map, nextHorzTouchX, nextHorzTouchY))
 		{
 			foundHorzWallHit = true;
 			ray->horzWallHit.x = nextHorzTouchX;
@@ -201,14 +204,19 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 			nextHorzTouchY += ray->ystep;
 		}
 	}
+	return ray->horzWallHit;
+}
 
-	//vertical
+t_point findVertWallPoint(t_conf *conf, t_ray *ray, const t_player player)
+{
 	int foundVertWallHit = false;
 	setFacingTo(ray);
 	ray->xintercept = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
 	if (ray->facingTo == DOWN_RIGHT || ray->facingTo == UP_RIGHT)
 		ray->xintercept += TILE_SIZE;
+	//printf("xintercept: %f\n", ray->xintercept);
 	ray->yintercept = player.pos.y + (ray->xintercept - player.pos.x) * tan(ray->angle);
+	//printf("yintercept: %f\n", ray->yintercept);
 	
 	ray->xstep = TILE_SIZE;
 	if (ray->facingTo == DOWN_LEFT || ray->facingTo == UP_LEFT)
@@ -219,8 +227,8 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 		ray->ystep *= -1;
 	if ((ray->facingTo == DOWN_LEFT || ray->facingTo == DOWN_RIGHT) && ray->ystep < 0)
 		ray->ystep *= -1;
-	printf("ystep: %f\n", ray->ystep);
-	printf("xstep: %f\n", ray->xstep);
+	/* printf("ystep: %f\n", ray->ystep);
+	printf("xstep: %f\n", ray->xstep); */
 
 	double nextVertTouchX = ray->xintercept;
 	double nextVertTouchY = ray->yintercept;
@@ -228,8 +236,8 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 	while (nextVertTouchX >= 0 && nextVertTouchX <= WINDOW_WIDTH && nextVertTouchY >= 0 && nextVertTouchY <= WINDOW_HEIGHT)
 	{
 		if (ray->facingTo == UP_LEFT || ray->facingTo == DOWN_LEFT)
-			nextVertTouchX--;
-		if (hasWallAt(conf->map.map, nextVertTouchX, nextVertTouchY))
+			nextVertTouchX -= 2;
+		if (hasWallAt(conf->map, nextVertTouchX, nextVertTouchY))
 		{
 			foundVertWallHit = true;
 			ray->vertWallHit.x = nextVertTouchX;
@@ -242,18 +250,30 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 			nextVertTouchY += ray->ystep;
 		}
 	}
+	printf("vertWallHit.x: %f\n", ray->vertWallHit.x);
+	printf("vertWallHit.y: %f\n", ray->vertWallHit.y);
+	return ray->vertWallHit;
+}
+
+void castRay(t_conf *conf, t_ray *ray, const t_player player)
+{
+	t_point wallHit;
+	ray->horzWallHit = findHorzWallPoint(conf, ray, player);
+	ray->vertWallHit = findVertWallPoint(conf, ray, player); 
+	
 	ray->horzDistance = distanceBetweenPoints(player.pos, ray->horzWallHit);
 	ray->vertDistance = distanceBetweenPoints(player.pos, ray->vertWallHit);
 
-	t_point wallHit;
 	if (ray->horzDistance - ray->vertDistance > 0)
 		wallHit = ray->vertWallHit;
 	else
 		wallHit = ray->horzWallHit;
 
-	printf("x: %f\ny: %f", wallHit.x, wallHit.y);
+	//printf("wallHit.x: %f\nwallHit.y: %f\n", wallHit.x, wallHit.y);
+	printf("vertWallHit.x: %f\nvertWallHit.y: %f\n", ray->vertWallHit.x, ray->vertWallHit.y);
 	
-	line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, wallHit, 0x00FFFF00);
+	//line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, wallHit, 0x00FFFF00);
+	line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, ray->vertWallHit, 0x00FF0000);
 }
 
 void castAllRays(t_conf *conf) {
@@ -284,7 +304,12 @@ void render(t_conf *conf)
 	mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img, 0, 0);
 }
 
+void printPos(t_player player)
+{
+	printf("x: %f\n", player.pos.x);
+	printf("y: %f\n", player.pos.y);
 
+}
 
 void printAngle(t_conf *conf)
 {
@@ -298,23 +323,23 @@ int deal_key(int key, t_conf *conf)
 	if (key == A_KEY)
 	{
 		//I don't understand why it works with multiple by 2
-		if (!hasWallAt(conf->map.map, conf->player.pos.x - PLAYER_SIZE * 2, conf->player.pos.y))
+		if (!hasWallAt(conf->map, conf->player.pos.x - PLAYER_SIZE * 2, conf->player.pos.y))
 			conf->player.pos.x -= PLAYER_SIZE;
 	}
 	else if (key == D_KEY)
 	{
-		if (!hasWallAt(conf->map.map, conf->player.pos.x + PLAYER_SIZE, conf->player.pos.y))
+		if (!hasWallAt(conf->map, conf->player.pos.x + PLAYER_SIZE, conf->player.pos.y))
 			conf->player.pos.x += PLAYER_SIZE;
 	}
 	else if (key == W_KEY)
 	{
 		//I don't understand why it works with multiple by 2
-		if (!hasWallAt(conf->map.map, conf->player.pos.x, conf->player.pos.y - PLAYER_SIZE * 2))
+		if (!hasWallAt(conf->map, conf->player.pos.x, conf->player.pos.y - PLAYER_SIZE * 2))
 			conf->player.pos.y -= PLAYER_SIZE;
 	}
 	else if (key == S_KEY)
 	{
-		if (!hasWallAt(conf->map.map, conf->player.pos.x, conf->player.pos.y + PLAYER_SIZE))
+		if (!hasWallAt(conf->map, conf->player.pos.x, conf->player.pos.y + PLAYER_SIZE))
 			conf->player.pos.y += PLAYER_SIZE;
 	}
 	else if (key == LEFT_KEY)
@@ -324,7 +349,7 @@ int deal_key(int key, t_conf *conf)
 		conf->player.pdx = cos(conf->player.angle) * 5;
 		conf->player.pdy = sin(conf->player.angle) * 5;
 		//delete later
-		printAngle(conf);
+		//printAngle(conf);
 	}
 	else if (key == RIGHT_KEY)
 	{
@@ -333,8 +358,9 @@ int deal_key(int key, t_conf *conf)
 		conf->player.pdx = cos(conf->player.angle) * 5;
 		conf->player.pdy = sin(conf->player.angle) * 5;
 		//delete later
-		printAngle(conf);
+		//printAngle(conf);
 	}
+	printPos(conf->player);
 	render(conf);
     return (0);
 }

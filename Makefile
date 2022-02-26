@@ -1,5 +1,5 @@
 CC				= 	gcc
-CFLAGS			= 	-Wall -Wextra -Werror
+CFLAGS			= 	-Wall -Wextra -Werror -g
 NAME			= 	cub3d
 INCLUDES		= 	includes
 SRCS_PATH		= 	./srcs/
