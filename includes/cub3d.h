@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/26 01:14:53 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/27 10:00:21 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdint.h>
 # include <math.h>
 # include <stdbool.h>
+# include <limits.h>
 
 # include "../libft/libft.h"
 # include "../minilibx-linux/mlx.h"
@@ -36,9 +37,10 @@
 # define PLAYER_SIZE 		8 * MINIMAP_SCALE
 
 #define FOV_ANGLE (60 * (M_PI / 180))
+#define TWO_PI M_PI * 2
 
 #define WALL_STRIP_WIDTH 4
-#define NUM_RAYS 32//WINDOW_WIDTH / WALL_STRIP_WIDTH
+#define NUM_RAYS 360//WINDOW_WIDTH / WALL_STRIP_WIDTH
 
 # define ESC_KEY 65307
 # define W_KEY 119
@@ -105,6 +107,8 @@ typedef struct s_ray {
 	double ystep;
 	t_point horzWallHit;
 	t_point vertWallHit;
+	int foundHorzWallHit;
+	int foundVertWallHit;
 	double horzDistance;
 	double vertDistance;
 	int wasHitVertical;
