@@ -45,17 +45,10 @@ void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
 }
 double normalizeAngle(double angle)
 {
-	angle = remainder(angle, TWO_PI);
-    if (angle < 0) {
-        angle = TWO_PI + angle;
-    }
-	/* angle = remainder(angle, M_PI * 2);
 	if (angle < 0)
-		angle = M_PI + angle; */
-	/* if (angle <= 0)
 		angle += 2 * M_PI;
-	if (angle >= 2 * M_PI)
-		angle -= 2 * M_PI; */
+	if (angle > 2 * M_PI)
+		angle -= 2 * M_PI;
 	return (angle);
 }
 
