@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/27 10:00:21 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/02/28 15:32:06 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define IMG_PLAYER 		"images/player1.xpm"
 # define IMG_PLAYER_2		"images/player2.xpm"
 
-# define MINIMAP_SCALE 1 
+# define MINIMAP_SCALE 1
 # define TILE_SIZE 			32 * MINIMAP_SCALE
 # define SCREEN_SIZE 		20
 # define PLAYER_SIZE 		8 * MINIMAP_SCALE
@@ -39,8 +39,7 @@
 #define FOV_ANGLE (60 * (M_PI / 180))
 #define TWO_PI M_PI * 2
 
-#define WALL_STRIP_WIDTH 4
-#define NUM_RAYS 360//WINDOW_WIDTH / WALL_STRIP_WIDTH
+#define WALL_STRIP_WIDTH 10
 
 # define ESC_KEY 65307
 # define W_KEY 119
@@ -50,13 +49,15 @@
 # define LEFT_KEY 65361
 # define RIGHT_KEY 65363
 
-# define ROTATE_SPEED 1/30
+# define ROTATE_SPEED 1/60
 
 # define WINDOW_WIDTH 1500
 # define WINDOW_HEIGHT 1000
 
 # define MINIMAP_WIDTH 750
 # define MINIMAP_HEIGHT 1000
+
+#define NUM_RAYS 32//WINDOW_WIDTH / WALL_STRIP_WIDTH
 
 typedef struct s_map
 {
@@ -111,6 +112,7 @@ typedef struct s_ray {
 	int foundVertWallHit;
 	double horzDistance;
 	double vertDistance;
+	double distance;
 	int wasHitVertical;
 	t_facing facingTo;
 	int wallHitContent;
@@ -130,6 +132,7 @@ typedef struct s_conf {
 	t_map		map;
 	t_images	images;
 	t_data		screen;
+	t_ray		rays[NUM_RAYS];
 }				t_conf;
 
 

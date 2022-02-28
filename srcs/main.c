@@ -17,7 +17,6 @@ bool hasWallAt(t_map map, double x, double y)
         return true;
 	size_t mapIndexX = floor(x / TILE_SIZE);
 	size_t mapIndexY = floor(y / TILE_SIZE);
-
 	return map.map[mapIndexY][mapIndexX] != '0';
 }
 
@@ -59,11 +58,11 @@ void circle_pixel_put(t_data *screen, unsigned int px, unsigned int py, int radi
 	int dx;
 	int dy;
 
-	y = 0;
-	while(y < WINDOW_HEIGHT)
+	y = py - radius;
+	while(y < py + radius)
 	{
-		x = 0;
-		while (x < WINDOW_WIDTH)
+		x = px - radius;
+		while (x < px + radius)
 		{
 			dx = (int)x - (int)px;
 			dy = (int)y - (int)py;
@@ -82,7 +81,6 @@ void line_pixel_put(t_data *screen, t_player *player, double angle, int color)
 	int x;
 	int y;
 	int len;
-
 	//need to change this len max 
 	//if you rotate a lot, segmentation fault
 	for (len = 0; len < 50; len++)
@@ -105,7 +103,6 @@ void line_pixel_put_2(t_data *screen, t_player player, t_point start, t_point en
 
 	dx = end.x - start.x;
 	dy = end.y - start.y;
-
 	len = sqrt(dx * dx + dy * dy);
 	rad = atan2(dy, dx);
 
@@ -182,8 +179,6 @@ t_point findHorzWall(t_conf *conf, t_ray *ray, const t_player player)
 		ray->xstep *= -1;
 	if ((ray->facingTo == UP_RIGHT || ray->facingTo == DOWN_RIGHT) && ray->xstep < 0)
 		ray->xstep *= -1;
-	/* printf("ystep: %f\n", ray->ystep);
-	printf("xstep: %f\n", ray->xstep); */
 
 	double nextHorzTouchX = ray->xintercept;
 	double nextHorzTouchY = ray->yintercept;
@@ -200,8 +195,6 @@ t_point findHorzWall(t_conf *conf, t_ray *ray, const t_player player)
 			ray->foundHorzWallHit = true;
 			ray->horzWallHit.x = nextHorzTouchX;
 			ray->horzWallHit.y = nextHorzTouchY;
-			/* printf("horzWallHit.x: %f\n", ray->horzWallHit.x);
-			printf("horzWallHit.y: %f\n", ray->horzWallHit.y); */
 			break;
 		}
 		else
@@ -222,9 +215,7 @@ t_point findVertWall(t_conf *conf, t_ray *ray, const t_player player)
 	ray->xintercept = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
 	if (ray->facingTo == DOWN_RIGHT || ray->facingTo == UP_RIGHT)
 		ray->xintercept += TILE_SIZE;
-	//printf("xintercept: %f\n", ray->xintercept);
 	ray->yintercept = player.pos.y + (ray->xintercept - player.pos.x) * tan(ray->angle);
-	//printf("yintercept: %f\n", ray->yintercept);
 	
 	ray->xstep = TILE_SIZE;
 	if (ray->facingTo == DOWN_LEFT || ray->facingTo == UP_LEFT)
@@ -235,8 +226,6 @@ t_point findVertWall(t_conf *conf, t_ray *ray, const t_player player)
 		ray->ystep *= -1;
 	if ((ray->facingTo == DOWN_LEFT || ray->facingTo == DOWN_RIGHT) && ray->ystep < 0)
 		ray->ystep *= -1;
-	/* printf("ystep: %f\n", ray->ystep);
-	printf("xstep: %f\n", ray->xstep); */
 
 	double nextVertTouchX = ray->xintercept;
 	double nextVertTouchY = ray->yintercept;
@@ -247,15 +236,11 @@ t_point findVertWall(t_conf *conf, t_ray *ray, const t_player player)
 		if (ray->facingTo == UP_LEFT || ray->facingTo == DOWN_LEFT)
 			xToCheck--;
 		double yToCheck = nextVertTouchY;
-		/* printf("nextX: %f\n", nextVertTouchX);
-		printf("nextY: %f\n", nextVertTouchY); */
 		if (hasWallAt(conf->map, xToCheck, yToCheck))
 		{
 			ray->foundVertWallHit = true;
 			ray->vertWallHit.x = nextVertTouchX;
 			ray->vertWallHit.y = nextVertTouchY;
-			/* printf("vertWallHit.x: %f\n", ray->vertWallHit.x);
-			printf("vertWallHit.y: %f\n", ray->vertWallHit.y); */
 			break;
 		}
 		else
@@ -264,8 +249,6 @@ t_point findVertWall(t_conf *conf, t_ray *ray, const t_player player)
 			nextVertTouchY += ray->ystep;
 		}
 	}
-	/* printf("vertWallHit.x: %f\n", ray->vertWallHit.x);
-	printf("vertWallHit.y: %f\n", ray->vertWallHit.y); */
 	return ray->vertWallHit;
 }
 
@@ -288,42 +271,73 @@ void castRay(t_conf *conf, t_ray *ray, const t_player player)
 	if (ray->vertDistance < ray->horzDistance)
 	{
 		wallHit = ray->vertWallHit;
-		//printf("wallHit: x:%f, y:%f\n", wallHit.x, wallHit.y);	 
+		ray->distance = ray->vertDistance;
 	}
 	else
 	{
 		wallHit = ray->horzWallHit;
-		printf("wallHit: x:%f, y:%f\n", wallHit.x, wallHit.y);	 
+		ray->distance = ray->horzDistance;
 	}
-
-	//printf("wallHit.x: %f\nwallHit.y: %f\n", wallHit.x, wallHit.y);
-	//printf("vertWallHit.x: %f\nvertWallHit.y: %f\n", ray->vertWallHit.x, ray->vertWallHit.y);
-	printf("wallHit: x:%f, y:%f\n", wallHit.x, wallHit.y);
 	
 	line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, wallHit, 0x00FFFF00);
-	//line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, ray->vertWallHit, 0x00FF0000);
 }
 
 void castAllRays(t_conf *conf) {
 	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
 	rayAngle = normalizeAngle(rayAngle);
-	t_ray rays[NUM_RAYS];
 
 	int stripId = 0;
 	while (stripId < NUM_RAYS)
 	{
-		//printf("[%d]", stripId);
-		//printf("rayAngle: %f\n", rayAngle);
-		rays[stripId].angle = rayAngle;
-		castRay(conf, &(rays[stripId]), conf->player);
+		conf->rays[stripId].angle = rayAngle;
+		castRay(conf, &(conf->rays[stripId]), conf->player);
 		rayAngle += FOV_ANGLE / NUM_RAYS;
 		rayAngle = normalizeAngle(rayAngle);
 		stripId++;
 	}
-	//printf("angle: %f\n", rays[22].angle);
-	//printf("angle: %f\n", rays[23].angle);
-	//castRay(conf, &(rays[22]), conf->player);
-	//castRay(conf, &(rays[23]), conf->player);
+}
+
+void rect_pixel_put(t_data *screen, t_point start, double width, double height, int color)
+{
+	int i;
+	int j;
+
+	i = start.y;
+	while (i < start.y + height)
+	{
+		j = start.x;
+		while(j < start.x + width)
+		{
+			my_mlx_pixel_put(screen, j, i, color);
+			j++;
+		}
+		i++;
+	}
+}
+
+void render3DWalls(t_conf *conf)
+{
+	double wallStripHeight;
+	int i;
+	double distanceProjectionPlane;
+	t_point p;
+	int color;
+	//int c_color;
+	
+	color = 0xFFFFFFFF;
+
+	distanceProjectionPlane = (MINIMAP_WIDTH / 2) / tan(FOV_ANGLE / 2);
+
+	i = 0;
+	while (i < NUM_RAYS)
+	{
+		wallStripHeight = (TILE_SIZE / conf->rays[i].distance) * distanceProjectionPlane;
+		p.y = (MINIMAP_HEIGHT / 2) - (wallStripHeight / 2);
+		p.x = i * WALL_STRIP_WIDTH;
+		//c_color = color - conf->rays[i].distance;
+		rect_pixel_put(&conf->screen, p, WALL_STRIP_WIDTH, wallStripHeight, color);
+		i++;
+	}
 }
 
 void render(t_conf *conf)
@@ -335,6 +349,7 @@ void render(t_conf *conf)
 	renderMap(conf->map.map, conf);
 	castAllRays(conf);
 	renderPlayer(conf);
+	render3DWalls(conf);
 
 	mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img, 0, 0);
 }
@@ -343,7 +358,6 @@ void printPos(t_player player)
 {
 	printf("x: %f\n", player.pos.x);
 	printf("y: %f\n", player.pos.y);
-
 }
 
 void printAngle(t_conf *conf)
@@ -395,7 +409,6 @@ int deal_key(int key, t_conf *conf)
 		//delete later
 		//printAngle(conf);
 	}
-	//printPos(conf->player);
 	render(conf);
     return (0);
 }
