@@ -331,7 +331,7 @@ void render3DWalls(t_conf *conf)
 	i = 0;
 	while (i < NUM_RAYS)
 	{
-		wallStripHeight = (TILE_SIZE / conf->rays[i].distance) * distanceProjectionPlane;
+		wallStripHeight = (TILE_SIZE / (conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle))) * distanceProjectionPlane;
 		p.y = (MINIMAP_HEIGHT / 2) - (wallStripHeight / 2);
 		p.x = i * WALL_STRIP_WIDTH;
 		//c_color = color - conf->rays[i].distance;
