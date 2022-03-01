@@ -2,7 +2,6 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
 	char	*dst;
@@ -11,7 +10,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-bool hasWallAt(t_map map, double x, double y)
+bool has_wall_at(t_map map, double x, double y)
 {
 	if (x < 0 || x >= ((int)map.width * TILE_SIZE) || y < 0 || y >= ((int)map.height * TILE_SIZE)) 
         return true;
@@ -42,7 +41,8 @@ void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
 		i++;
 	}
 }
-double normalizeAngle(double angle)
+
+double normalize_angle(double angle)
 {
 	if (angle < 0)
 		angle += 2 * M_PI;
@@ -76,17 +76,15 @@ void circle_pixel_put(t_data *screen, unsigned int px, unsigned int py, int radi
 	}
 }
 
-void line_pixel_put(t_data *screen, t_player *player, double angle, int color)
+void line_pixel_put(t_data *screen, t_player *player, double angle, double len, int color)
 {
 	int x;
 	int y;
-	int len;
-	//need to change this len max 
-	//if you rotate a lot, segmentation fault
-	for (len = 0; len < 50; len++)
+	double i;
+	for (i = 0; i < len; i++)
 	{
-		x = player->pos.x * MINIMAP_SCALE + len * cos(angle);
-		y = player->pos.y * MINIMAP_SCALE + len * sin(angle);
+		x = player->pos.x * MINIMAP_SCALE + i * cos(angle);
+		y = player->pos.y * MINIMAP_SCALE + i * sin(angle);
 		my_mlx_pixel_put(screen, x, y, color);
 	}
 }
@@ -114,14 +112,14 @@ void line_pixel_put_2(t_data *screen, t_player player, t_point start, t_point en
 	}
 }
 
-void renderPlayer(t_conf *conf)
+void render_player(t_conf *conf)
 {
 	circle_pixel_put(&conf->screen, conf->player.pos.x * MINIMAP_SCALE, conf->player.pos.y * MINIMAP_SCALE, PLAYER_SIZE / 2, 0x00FF0000);
-	line_pixel_put(&conf->screen, &conf->player, conf->player.angle, 0x00FF0000);
+	line_pixel_put(&conf->screen, &conf->player, conf->player.angle, 30, 0x00FF0000);
 
 }
 
-void renderMap(char **map, t_conf *conf)
+void render_map(char **map, t_conf *conf)
 {
 	size_t	y;
 	size_t	x;
@@ -142,158 +140,252 @@ void renderMap(char **map, t_conf *conf)
 	}
 }
 
-void setFacingTo(t_ray *ray)
+void set_facing_to(t_ray *ray)
 {
 	if (ray->angle > 0 && ray->angle <= M_PI / 2)
-		ray->facingTo = DOWN_RIGHT;
+		ray->facing_to = DOWN | RIGHT;
 	if (ray->angle > M_PI / 2 && ray->angle <= M_PI)
-		ray->facingTo = DOWN_LEFT;
+		ray->facing_to = DOWN | LEFT;
 	if (ray->angle > M_PI && ray->angle <= M_PI * 3 / 2)
-		ray->facingTo = UP_LEFT;
+		ray->facing_to = UP | LEFT;
 	if (ray->angle >= M_PI * 3 / 2 && ray->angle <= M_PI * 2)
-		ray->facingTo = UP_RIGHT;	
+		ray->facing_to = UP | RIGHT;	
 }
 
-double distanceBetweenPoints(t_point start, t_point end)
+double distance_between_points(t_point start, t_point end)
 {
 	return sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
 }
 
-t_point findHorzWall(t_conf *conf, t_ray *ray, const t_player player)
+void clear_color_buffer(t_conf *conf, uint32_t color)
 {
-	ray->foundHorzWallHit = 0;
-	ray->horzWallHit.x = 0;
-	ray->horzWallHit.y = 0;
-	setFacingTo(ray);
-	ray->yintercept = floor(player.pos.y / TILE_SIZE) * TILE_SIZE;
-	if (ray->facingTo == DOWN_RIGHT || ray->facingTo == DOWN_LEFT)
-		ray->yintercept += TILE_SIZE;
-	ray->xintercept = player.pos.x + (ray->yintercept - player.pos.y) / tan(ray->angle);
-	
+	int x;
+	int y;
+
+	x = 0;
+	while(x < WINDOW_WIDTH)
+	{
+		y = 0;
+		while (y < WINDOW_HEIGHT)
+		{
+			conf->color_buffer[(WINDOW_WIDTH * y) + x] = color;
+			y++;
+		}
+		x++;
+	}
+}
+
+void render_color_buffer(t_conf *conf)
+{
+	int x;
+	int y;
+
+	x = 0;
+	while (x < WINDOW_WIDTH)
+	{
+		y = 0;
+		while(y < WINDOW_HEIGHT)
+		{
+			my_mlx_pixel_put(&conf->screen, x, y, conf->color_buffer[(WINDOW_WIDTH * y) + x]);
+			y++;
+		}
+		x++;
+	}
+}
+
+void set_horz_intercepts(t_ray *ray, const t_player player)
+{
+	ray->intercept.y = floor(player.pos.y / TILE_SIZE) * TILE_SIZE;
+	if (ray->facing_to & DOWN)
+		ray->intercept.y += TILE_SIZE;
+	ray->intercept.x = player.pos.x + (ray->intercept.y - player.pos.y) / tan(ray->angle);
+}
+
+void set_horz_steps(t_ray *ray)
+{
 	ray->ystep = TILE_SIZE;
-	if (ray->facingTo == UP_RIGHT || ray->facingTo == UP_LEFT)
+	if (ray->facing_to & UP)
 		ray->ystep *= -1;
 
 	ray->xstep = TILE_SIZE / tan(ray->angle);
-	if ((ray->facingTo == UP_LEFT || ray->facingTo == DOWN_LEFT) && ray->xstep > 0)
+	if ((ray->facing_to & LEFT) && ray->xstep > 0)
 		ray->xstep *= -1;
-	if ((ray->facingTo == UP_RIGHT || ray->facingTo == DOWN_RIGHT) && ray->xstep < 0)
+	if ((ray->facing_to & RIGHT) && ray->xstep < 0)
 		ray->xstep *= -1;
+}
 
-	double nextHorzTouchX = ray->xintercept;
-	double nextHorzTouchY = ray->yintercept;
+void set_horz_wall_hit(const t_map map, t_ray *ray)
+{
+	t_point next;
+	t_point to_check;
 
-	
-	while (nextHorzTouchX >= 0 && nextHorzTouchX <= WINDOW_WIDTH && nextHorzTouchY >= 0 && nextHorzTouchY <= WINDOW_HEIGHT)
+	next.x = ray->intercept.x;
+	next.y = ray->intercept.y;
+	while (next.x >= 0 && next.x <= WINDOW_WIDTH && next.y >= 0 && next.y <= WINDOW_HEIGHT)
 	{
-		double xToCheck = nextHorzTouchX;
-		double yToCheck = nextHorzTouchY;
-		if (ray->facingTo == UP_LEFT || ray->facingTo == UP_RIGHT)
-			yToCheck--;
-		if (hasWallAt(conf->map, xToCheck, yToCheck))
+		to_check.x = next.x;
+		to_check.y = next.y;
+		if (ray->facing_to & UP)
+			to_check.y--;
+		if (has_wall_at(map, to_check.x, to_check.y))
 		{
-			ray->foundHorzWallHit = true;
-			ray->horzWallHit.x = nextHorzTouchX;
-			ray->horzWallHit.y = nextHorzTouchY;
+			ray->found_horz_wall_hit = true;
+			ray->horz_wall_hit.x = next.x;
+			ray->horz_wall_hit.y = next.y;
 			break;
 		}
 		else
 		{
-			nextHorzTouchX += ray->xstep;
-			nextHorzTouchY += ray->ystep;
+			next.x += ray->xstep;
+			next.y += ray->ystep;
 		}
 	}
-	return ray->horzWallHit;
 }
 
-t_point findVertWall(t_conf *conf, t_ray *ray, const t_player player)
+t_point find_horz_wall(t_conf *conf, t_ray *ray, const t_player player)
 {
-	ray->foundVertWallHit = 0;
-	ray->vertWallHit.x = 0;
-	ray->vertWallHit.y = 0;
-	setFacingTo(ray);
-	ray->xintercept = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
-	if (ray->facingTo == DOWN_RIGHT || ray->facingTo == UP_RIGHT)
-		ray->xintercept += TILE_SIZE;
-	ray->yintercept = player.pos.y + (ray->xintercept - player.pos.x) * tan(ray->angle);
-	
+	ray->found_horz_wall_hit = 0;
+	ray->horz_wall_hit.x = 0;
+	ray->horz_wall_hit.y = 0;
+	set_facing_to(ray);
+	set_horz_intercepts(ray, player);
+	set_horz_steps(ray);
+	set_horz_wall_hit(conf->map, ray);
+	return (ray->horz_wall_hit);
+}
+
+void set_vert_intercepts(t_ray *ray, const t_player player)
+{
+	ray->intercept.x = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
+	if (ray->facing_to & RIGHT)
+		ray->intercept.x += TILE_SIZE;
+	ray->intercept.y = player.pos.y + (ray->intercept.x - player.pos.x) * tan(ray->angle);
+}
+
+void set_vert_steps(t_ray *ray)
+{
 	ray->xstep = TILE_SIZE;
-	if (ray->facingTo == DOWN_LEFT || ray->facingTo == UP_LEFT)
+	if (ray->facing_to & LEFT)
 		ray->xstep *= -1;
 
 	ray->ystep = TILE_SIZE * tan(ray->angle);
-	if ((ray->facingTo == UP_LEFT || ray->facingTo == UP_RIGHT) && ray->ystep > 0)
+	if ((ray->facing_to & UP) && ray->ystep > 0)
 		ray->ystep *= -1;
-	if ((ray->facingTo == DOWN_LEFT || ray->facingTo == DOWN_RIGHT) && ray->ystep < 0)
+	if ((ray->facing_to & DOWN) && ray->ystep < 0)
 		ray->ystep *= -1;
+}
 
-	double nextVertTouchX = ray->xintercept;
-	double nextVertTouchY = ray->yintercept;
-	
-	while (nextVertTouchX >= 0 && nextVertTouchX <= WINDOW_WIDTH && nextVertTouchY >= 0 && nextVertTouchY <= WINDOW_HEIGHT)
+void set_vert_wall_hit(const t_map map, t_ray *ray)
+{
+	t_point next;
+	t_point to_check;
+
+	next.x = ray->intercept.x;
+	next.y = ray->intercept.y;
+	while (next.x >= 0 && next.x <= WINDOW_WIDTH && next.y >= 0 && next.y <= WINDOW_HEIGHT)
 	{
-		double xToCheck = nextVertTouchX;
-		if (ray->facingTo == UP_LEFT || ray->facingTo == DOWN_LEFT)
-			xToCheck--;
-		double yToCheck = nextVertTouchY;
-		if (hasWallAt(conf->map, xToCheck, yToCheck))
+		to_check.x = next.x;
+		to_check.y = next.y;
+		if (ray->facing_to & LEFT)
+			to_check.x--;
+		if (has_wall_at(map, to_check.x, to_check.y))
 		{
-			ray->foundVertWallHit = true;
-			ray->vertWallHit.x = nextVertTouchX;
-			ray->vertWallHit.y = nextVertTouchY;
+			ray->found_vert_wall_hit = true;
+			ray->vert_wall_hit.x = next.x;
+			ray->vert_wall_hit.y = next.y;
 			break;
 		}
 		else
 		{
-			nextVertTouchX += ray->xstep;
-			nextVertTouchY += ray->ystep;
+			next.x += ray->xstep;
+			next.y += ray->ystep;
 		}
 	}
-	return ray->vertWallHit;
 }
 
-void castRay(t_conf *conf, t_ray *ray, const t_player player)
+t_point find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
 {
-	t_point wallHit;
-	ray->horzWallHit = findHorzWall(conf, ray, player);
-	ray->vertWallHit = findVertWall(conf, ray, player); 
-
-	if (ray->foundHorzWallHit)	
-		ray->horzDistance = distanceBetweenPoints(player.pos, ray->horzWallHit);
-	else
-		ray->horzDistance = INT_MAX;
-
-	if (ray->foundVertWallHit)
-		ray->vertDistance = distanceBetweenPoints(player.pos, ray->vertWallHit);
-	else
-		ray->vertDistance = INT_MAX;
-
-	if (ray->vertDistance < ray->horzDistance)
-	{
-		wallHit = ray->vertWallHit;
-		ray->distance = ray->vertDistance;
-	}
-	else
-	{
-		wallHit = ray->horzWallHit;
-		ray->distance = ray->horzDistance;
-	}
-	
-	line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, wallHit, 0x00FFFF00);
+	ray->found_vert_wall_hit = 0;
+	ray->vert_wall_hit.x = 0;
+	ray->vert_wall_hit.y = 0;
+	set_facing_to(ray);
+	set_vert_intercepts(ray, player);
+	set_vert_steps(ray);
+	set_vert_wall_hit(conf->map, ray);
+	return (ray->vert_wall_hit);
 }
 
-void castAllRays(t_conf *conf) {
-	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
-	rayAngle = normalizeAngle(rayAngle);
+void set_horz_distance(t_ray *ray, const t_player player)
+{
+	if (ray->found_horz_wall_hit)	
+		ray->horz_distance = distance_between_points(player.pos, ray->horz_wall_hit);
+	else
+		ray->horz_distance = INT_MAX;
+}
 
-	int stripId = 0;
-	while (stripId < NUM_RAYS)
+void set_vert_distance(t_ray *ray, const t_player player)
+{
+	if (ray->found_vert_wall_hit)
+		ray->vert_distance = distance_between_points(player.pos, ray->vert_wall_hit);
+	else
+		ray->vert_distance = INT_MAX;
+}
+
+void set_wall_hit(t_ray *ray)
+{
+	if (ray->vert_distance < ray->horz_distance)
 	{
-		conf->rays[stripId].angle = rayAngle;
-		castRay(conf, &(conf->rays[stripId]), conf->player);
+		ray->wall_hit = ray->vert_wall_hit;
+		ray->distance = ray->vert_distance;
+		ray->was_hit_vertical = true;	
+	}
+	else
+	{
+		ray->wall_hit = ray->horz_wall_hit;
+		ray->distance = ray->horz_distance;
+	}	
+}
+
+void set_each_ray(t_conf *conf, t_ray *ray, const t_player player)
+{
+	ray->horz_wall_hit = find_horz_wall(conf, ray, player);
+	ray->vert_wall_hit = find_vert_wall(conf, ray, player); 
+	//initialize
+	ray->was_hit_vertical = false;
+
+	set_horz_distance(ray, player);
+	set_vert_distance(ray, player);
+	set_wall_hit(ray);
+}
+
+void set_rays(t_conf *conf) {
+	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
+	rayAngle = normalize_angle(rayAngle);
+
+	int strip_id = 0;
+	while (strip_id < NUM_RAYS)
+	{
+		conf->rays[strip_id].angle = rayAngle;
+		set_each_ray(conf, &(conf->rays[strip_id]), conf->player);
 		rayAngle += FOV_ANGLE / NUM_RAYS;
-		rayAngle = normalizeAngle(rayAngle);
-		stripId++;
+		rayAngle = normalize_angle(rayAngle);
+		strip_id++;
+	}
+}
+
+void render_rays(t_conf *conf)
+{
+	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
+	rayAngle = normalize_angle(rayAngle);
+
+	int strip_id = 0;
+	while (strip_id < NUM_RAYS)
+	{
+		conf->rays[strip_id].angle = rayAngle;
+		line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, conf->rays[strip_id].wall_hit, 0x00FFFF00);
+		rayAngle += FOV_ANGLE / NUM_RAYS;
+		rayAngle = normalize_angle(rayAngle);
+		strip_id++;
 	}
 }
 
@@ -315,100 +407,120 @@ void rect_pixel_put(t_data *screen, t_point start, double width, double height, 
 	}
 }
 
-void render3DWalls(t_conf *conf)
+void set_ceiling_color(t_conf *conf, const t_3d info_3d, int *i)
 {
-	double wallStripHeight;
-	int i;
-	double distanceProjectionPlane;
-	t_point p;
-	int color;
-	//int c_color;
-	
-	color = 0xFFFFFFFF;
+	int y;
 
-	distanceProjectionPlane = (MINIMAP_WIDTH / 2) / tan(FOV_ANGLE / 2);
+	y = 0;
+	while (y < info_3d.wall_top)
+	{
+		conf->color_buffer[(WINDOW_WIDTH * y) + *i] = 0xFF333333;
+		y++;
+	}
+}
 
+void set_wall_color(t_conf *conf, const t_3d info_3d, int *i)
+{
+	int y;
+	y = info_3d.wall_top;
+	while (y < info_3d.wall_bottom)
+	{
+		if (conf->rays[*i].was_hit_vertical)
+           	conf->color_buffer[(WINDOW_WIDTH * y) + *i] = 0xFFFFFFFF;
+		else
+           	conf->color_buffer[(WINDOW_WIDTH * y) + *i] = 0xFFCCCCCC;
+		y++;
+	}
+}
+
+void set_floor_color(t_conf *conf, const t_3d info_3d, int *i)
+{
+	int y;
+
+	y = info_3d.wall_bottom;
+	while (y < WINDOW_HEIGHT)
+	{
+		conf->color_buffer[(WINDOW_WIDTH * y) + *i] = 0xFF777777;
+		y++;
+	}
+
+}
+
+void render_3d_walls(t_conf *conf)
+{
+	int i;	
+	t_3d info_3d;
+
+	//initialize	
+	info_3d.distance_to_projection = (WINDOW_WIDTH / 2) / tan(FOV_ANGLE / 2);
 	i = 0;
 	while (i < NUM_RAYS)
 	{
-		wallStripHeight = (TILE_SIZE / (conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle))) * distanceProjectionPlane;
-		p.y = (MINIMAP_HEIGHT / 2) - (wallStripHeight / 2);
-		p.x = i * WALL_STRIP_WIDTH;
-		//c_color = color - conf->rays[i].distance;
-		rect_pixel_put(&conf->screen, p, WALL_STRIP_WIDTH, wallStripHeight, color);
+		info_3d.prep_distance = conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle);
+		info_3d.wall_strip_height = (TILE_SIZE / info_3d.prep_distance) * info_3d.distance_to_projection;
+		info_3d.wall_top = (WINDOW_HEIGHT / 2) - (info_3d.wall_strip_height / 2);
+		if (info_3d.wall_top < 0)
+			info_3d.wall_top = 0;
+		info_3d.wall_bottom = (WINDOW_HEIGHT / 2) + (info_3d.wall_strip_height / 2);
+		if (info_3d.wall_bottom > WINDOW_HEIGHT)
+			info_3d.wall_bottom = WINDOW_HEIGHT;
+		set_ceiling_color(conf, info_3d, &i);
+		set_wall_color(conf, info_3d, &i);
+		set_floor_color(conf, info_3d, &i);	
 		i++;
 	}
+	render_color_buffer(conf);
 }
 
 void render(t_conf *conf)
 {
-	conf->screen.img = mlx_new_image(conf->mlx_ptr, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+	conf->screen.img = mlx_new_image(conf->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT);
 	conf->screen.addr = mlx_get_data_addr(conf->screen.img, &conf->screen.bits_per_pixel, &conf->screen.line_length,
 								&conf->screen.endian);
 
-	renderMap(conf->map.map, conf);
-	castAllRays(conf);
-	renderPlayer(conf);
-	render3DWalls(conf);
-
+	render_3d_walls(conf);
+	render_map(conf->map.map, conf);
+	render_rays(conf);
+	render_player(conf);	
 	mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img, 0, 0);
 }
 
-void printPos(t_player player)
-{
-	printf("x: %f\n", player.pos.x);
-	printf("y: %f\n", player.pos.y);
-}
 
-void printAngle(t_conf *conf)
+
+void move_player(const t_map map, t_player *player, double newDestX, double newDestY)
 {
-	printf("angle: %f\n", conf->player.angle);
-	printf("pdx: %f\n", conf->player.pdx);
-	printf("pdy: %f\n", conf->player.pdy);
+	if (!has_wall_at(map, newDestX, newDestY))
+	{
+		player->pos.x = newDestX;
+		player->pos.y = newDestY;
+	}
 }
 
 int deal_key(int key, t_conf *conf)
 {
 	if (key == A_KEY)
-	{
-		//I don't understand why it works with multiple by 2
-		if (!hasWallAt(conf->map, conf->player.pos.x - PLAYER_SIZE * 2, conf->player.pos.y))
-			conf->player.pos.x -= PLAYER_SIZE;
-	}
+		move_player(conf->map, &conf->player, conf->player.pos.x + PLAYER_SIZE * cos(normalize_angle(conf->player.angle - M_PI / 2)), conf->player.pos.y + PLAYER_SIZE * sin(normalize_angle(conf->player.angle - M_PI / 2)));
 	else if (key == D_KEY)
-	{
-		if (!hasWallAt(conf->map, conf->player.pos.x + PLAYER_SIZE, conf->player.pos.y))
-			conf->player.pos.x += PLAYER_SIZE;
-	}
+		move_player(conf->map, &conf->player, conf->player.pos.x + PLAYER_SIZE * cos(normalize_angle(conf->player.angle + M_PI / 2)), conf->player.pos.y + PLAYER_SIZE * sin(normalize_angle(conf->player.angle + M_PI / 2)));
 	else if (key == W_KEY)
-	{
-		//I don't understand why it works with multiple by 2
-		if (!hasWallAt(conf->map, conf->player.pos.x, conf->player.pos.y - PLAYER_SIZE * 2))
-			conf->player.pos.y -= PLAYER_SIZE;
-	}
+		move_player(conf->map, &conf->player, conf->player.pos.x + PLAYER_SIZE * cos(conf->player.angle), conf->player.pos.y + PLAYER_SIZE * sin(conf->player.angle));
 	else if (key == S_KEY)
-	{
-		if (!hasWallAt(conf->map, conf->player.pos.x, conf->player.pos.y + PLAYER_SIZE))
-			conf->player.pos.y += PLAYER_SIZE;
-	}
+		move_player(conf->map, &conf->player, conf->player.pos.x - PLAYER_SIZE * cos(conf->player.angle), conf->player.pos.y - PLAYER_SIZE * sin(conf->player.angle));
 	else if (key == LEFT_KEY)
 	{
 		conf->player.angle -= M_PI * ROTATE_SPEED;
-		conf->player.angle = normalizeAngle(conf->player.angle);	
+		conf->player.angle = normalize_angle(conf->player.angle);	
 		conf->player.pdx = cos(conf->player.angle);
 		conf->player.pdy = sin(conf->player.angle);
-		//delete later
-		//printAngle(conf);
 	}
 	else if (key == RIGHT_KEY)
 	{
 		conf->player.angle += M_PI * ROTATE_SPEED;
-		conf->player.angle = normalizeAngle(conf->player.angle);		
+		conf->player.angle = normalize_angle(conf->player.angle);		
 		conf->player.pdx = cos(conf->player.angle);
 		conf->player.pdy = sin(conf->player.angle);
-		//delete later
-		//printAngle(conf);
 	}
+	set_rays(conf);
 	render(conf);
     return (0);
 }
@@ -418,6 +530,7 @@ void init_conf(t_conf *conf)
 	*conf = (t_conf){};
 	conf->player.pos.x = 80;
 	conf->player.pos.y = 80;
+	conf->color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
 }
 
 
@@ -446,6 +559,7 @@ char	**map_set(char *mapfile, t_conf *conf)
 void exit_tmp(t_conf *conf)
 {
 	(void)conf;
+	free(conf->color_buffer);
 	exit(0);
 }
 
@@ -460,6 +574,7 @@ int main(int ac, char *av[])
     conf.win_ptr = mlx_new_window(conf.mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT, "cub3d");
 	conf.map.map = map_set(av[1], &conf);
 	map_check(conf.map.map, &conf);
+	set_rays(&conf);
 	render(&conf);
     mlx_hook(conf.win_ptr, 2, 1L << 0, deal_key, &conf);
     mlx_loop(conf.mlx_ptr);

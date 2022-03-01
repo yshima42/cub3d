@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/28 15:32:06 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/01 17:58:28 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 #define FOV_ANGLE (60 * (M_PI / 180))
 #define TWO_PI M_PI * 2
 
-#define WALL_STRIP_WIDTH 10
+#define WALL_STRIP_WIDTH 1
 
 # define ESC_KEY 65307
 # define W_KEY 119
@@ -54,10 +54,16 @@
 # define WINDOW_WIDTH 1500
 # define WINDOW_HEIGHT 1000
 
-# define MINIMAP_WIDTH 750
+# define MINIMAP_WIDTH 1500
 # define MINIMAP_HEIGHT 1000
 
-#define NUM_RAYS 32//WINDOW_WIDTH / WALL_STRIP_WIDTH
+# define RIGHT 1 << 0
+# define LEFT 1 << 1
+# define UP 1 << 2
+# define DOWN 1 << 3
+
+
+#define NUM_RAYS WINDOW_WIDTH / WALL_STRIP_WIDTH
 
 typedef struct s_map
 {
@@ -92,31 +98,31 @@ typedef struct s_point {
 	double y;
 }				t_point;
 
-typedef enum s_facing {
-	DEFAULT,
-	DOWN_RIGHT,
-	DOWN_LEFT,
-	UP_LEFT,
-	UP_RIGHT,
-}	t_facing;
-
 typedef struct s_ray {
 	double angle;
-	double xintercept;
-	double yintercept;
+	t_point intercept;
 	double xstep;
 	double ystep;
-	t_point horzWallHit;
-	t_point vertWallHit;
-	int foundHorzWallHit;
-	int foundVertWallHit;
-	double horzDistance;
-	double vertDistance;
+	t_point horz_wall_hit;
+	t_point vert_wall_hit;
+	int found_horz_wall_hit;
+	int found_vert_wall_hit;
+	double horz_distance;
+	double vert_distance;
 	double distance;
-	int wasHitVertical;
-	t_facing facingTo;
-	int wallHitContent;
+	t_point wall_hit;
+	int was_hit_vertical;
+	unsigned int facing_to;
+	int wall_hit_content;
 }				t_ray;
+
+typedef struct s_3d {
+	int wall_strip_height;
+	double prep_distance;
+	double distance_to_projection;
+	int wall_top;
+	int wall_bottom;
+}			t_3d;
 
 typedef struct s_player {
 	t_point pos;
@@ -133,9 +139,8 @@ typedef struct s_conf {
 	t_images	images;
 	t_data		screen;
 	t_ray		rays[NUM_RAYS];
+	uint32_t	*color_buffer;
 }				t_conf;
-
-
 
 //utils.c
 void	array_loop(char **map, t_conf *conf, char *f(char c, t_conf *conf));
