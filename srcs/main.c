@@ -2,7 +2,7 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, size_t color)
 {
 	char	*dst;
 
@@ -12,18 +12,18 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 bool has_wall_at(t_map map, double x, double y)
 {
-	if (x < 0 || x >= ((int)map.width * TILE_SIZE) || y < 0 || y >= ((int)map.height * TILE_SIZE)) 
+	if (x < 0 || x > ((int)map.width * TILE_SIZE) || y < 0 || y > ((int)map.height * TILE_SIZE)) 
         return true;
 	size_t mapIndexX = floor(x / TILE_SIZE);
 	size_t mapIndexY = floor(y / TILE_SIZE);
 	return map.map[mapIndexY][mapIndexX] != '0';
 }
 
-void squre_pixel_put(t_data *screen, int px, int py, int size, int color)
+void squre_pixel_put(t_data *screen, size_t px, size_t py, size_t size, size_t color)
 {
-	int i;
-	int j;
-	int c_color;
+	size_t i;
+	size_t j;
+	size_t c_color;
 
 	i = px;
 	while (i < px + size)
@@ -51,21 +51,21 @@ double normalize_angle(double angle)
 	return (angle);
 }
 
-void circle_pixel_put(t_data *screen, unsigned int px, unsigned int py, int radius, int color)
+void circle_pixel_put(t_data *screen, t_xy pos, size_t radius, size_t color)
 {
-	unsigned int x;
-	unsigned int y;
-	int dx;
-	int dy;
+	size_t x;
+	size_t y;
+	size_t dx;
+	size_t dy;
 
-	y = py - radius;
-	while(y < py + radius)
+	y = pos.y - radius;
+	while(y < pos.y + radius)
 	{
-		x = px - radius;
-		while (x < px + radius)
+		x = pos.x - radius;
+		while (x < pos.x + radius)
 		{
-			dx = (int)x - (int)px;
-			dy = (int)y - (int)py;
+			dx = x - pos.x;
+			dy = y - pos.y;
 			if ((dx * dx) + (dy * dy) <= radius * radius)
 			{
 				my_mlx_pixel_put(screen, x, y, color);
@@ -76,54 +76,52 @@ void circle_pixel_put(t_data *screen, unsigned int px, unsigned int py, int radi
 	}
 }
 
-void line_pixel_put(t_data *screen, t_player *player, double angle, double len, int color)
+void line_pixel_put(t_data *screen, t_xy pos, double angle, double len, size_t color)
 {
-	int x;
-	int y;
+	size_t x;
+	size_t y;
 	double i;
 	for (i = 0; i < len; i++)
 	{
-		x = player->pos.x * MINIMAP_SCALE + i * cos(angle);
-		y = player->pos.y * MINIMAP_SCALE + i * sin(angle);
+		x = pos.x * MINIMAP_SCALE + i * cos(angle);
+		y = pos.y * MINIMAP_SCALE + i * sin(angle);
 		my_mlx_pixel_put(screen, x, y, color);
 	}
 }
 
-void line_pixel_put_2(t_data *screen, t_player player, t_point start, t_point end, int color)
+void line_pixel_put_2(t_data *screen, t_player player, t_xy start, t_xy end, size_t color)
 {
-	unsigned int x;
-	unsigned int y;
-	int dx;
-	int dy;
-	unsigned int len;
-	double rad;
-	unsigned int i;
+	t_xy	line;
+	t_xy	dist;
+	size_t	len;
+	double	rad;
+	size_t	i;
 
-	dx = end.x - start.x;
-	dy = end.y - start.y;
-	len = sqrt(dx * dx + dy * dy);
-	rad = atan2(dy, dx);
-
-	for (i = 0; i < len; i++)
+	dist.x = end.x - start.x;
+	dist.y = end.y - start.y;
+	len = sqrt(dist.x * dist.x + dist.y * dist.y);
+	rad = atan2(dist.y, dist.x);
+	i = 0;
+	while (i < len)
 	{
-		x = player.pos.x * MINIMAP_SCALE + i * cos(rad);
-		y = player.pos.y * MINIMAP_SCALE + i * sin(rad);
-		my_mlx_pixel_put(screen, x, y, color);
+		line.x = player.pos.x * MINIMAP_SCALE + i * cos(rad);
+		line.y = player.pos.y * MINIMAP_SCALE + i * sin(rad);
+		my_mlx_pixel_put(screen, line.x, line.y, color);
+		i++;
 	}
 }
 
-void render_player(t_conf *conf)
+void render_player(t_data *screen, const t_player player)
 {
-	circle_pixel_put(&conf->screen, conf->player.pos.x * MINIMAP_SCALE, conf->player.pos.y * MINIMAP_SCALE, PLAYER_SIZE / 2, 0x00FF0000);
-	line_pixel_put(&conf->screen, &conf->player, conf->player.angle, 30, 0x00FF0000);
-
+	circle_pixel_put(screen, player.pos, PLAYER_SIZE / 2, 0x00FF0000);
+	line_pixel_put(screen, player.pos, player.angle, 30, 0x00FF0000);
 }
 
-void render_map(char **map, t_conf *conf)
+void render_map(t_data *screen, char **map)
 {
 	size_t	y;
 	size_t	x;
-	
+
 	y = 0;
 	while (map[y])
 	{
@@ -131,9 +129,9 @@ void render_map(char **map, t_conf *conf)
 		while (map[y][x])
 		{
 			if (map[y][x] == '1')
-				squre_pixel_put(&conf->screen, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, 0xFFFFFF);
+				squre_pixel_put(screen, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, 0xFFFFFF);
 			else if (map[y][x] == '0')
-				squre_pixel_put(&conf->screen, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, 0x000000);
+				squre_pixel_put(screen, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, 0x000000);
 			x++;
 		}
 		y++;
@@ -152,15 +150,15 @@ void set_facing_to(t_ray *ray)
 		ray->facing_to = UP | RIGHT;	
 }
 
-double distance_between_points(t_point start, t_point end)
+double distance_between_points(t_xy start, t_xy end)
 {
 	return sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
 }
 
-void clear_color_buffer(t_conf *conf, uint32_t color)
+void clear_color_buffer(t_conf *conf, size_t color)
 {
-	int x;
-	int y;
+	size_t x;
+	size_t y;
 
 	x = 0;
 	while(x < WINDOW_WIDTH)
@@ -177,8 +175,8 @@ void clear_color_buffer(t_conf *conf, uint32_t color)
 
 void render_color_buffer(t_conf *conf)
 {
-	int x;
-	int y;
+	size_t x;
+	size_t y;
 
 	x = 0;
 	while (x < WINDOW_WIDTH)
@@ -193,206 +191,236 @@ void render_color_buffer(t_conf *conf)
 	}
 }
 
-void set_horz_intercepts(t_ray *ray, const t_player player)
+t_xy calc_horz_intercept(t_ray *ray, const t_player player)
 {
-	ray->intercept.y = floor(player.pos.y / TILE_SIZE) * TILE_SIZE;
+	t_xy intercept;
+
+	intercept.y = floor(player.pos.y / TILE_SIZE) * TILE_SIZE;
 	if (ray->facing_to & DOWN)
-		ray->intercept.y += TILE_SIZE;
-	ray->intercept.x = player.pos.x + (ray->intercept.y - player.pos.y) / tan(ray->angle);
+		intercept.y += TILE_SIZE;
+	intercept.x = player.pos.x + (intercept.y - player.pos.y) / tan(ray->angle);
+	return (intercept);
 }
 
-void set_horz_steps(t_ray *ray)
+t_xy calc_horz_step(t_ray *ray)
 {
-	ray->ystep = TILE_SIZE;
+	t_xy	step;
+
+	step.y = TILE_SIZE;
 	if (ray->facing_to & UP)
-		ray->ystep *= -1;
+		step.y *= -1;
 
-	ray->xstep = TILE_SIZE / tan(ray->angle);
-	if ((ray->facing_to & LEFT) && ray->xstep > 0)
-		ray->xstep *= -1;
-	if ((ray->facing_to & RIGHT) && ray->xstep < 0)
-		ray->xstep *= -1;
+	step.x = TILE_SIZE / tan(ray->angle);
+	if ((ray->facing_to & LEFT) && step.x > 0)
+		step.x *= -1;
+	if ((ray->facing_to & RIGHT) && step.x < 0)
+		step.x *= -1;
+	return (step);
 }
 
-void set_horz_wall_hit(const t_map map, t_ray *ray)
+t_xy calc_horz_wall_hit(const t_map map, t_ray *ray, t_xy step, t_xy intercept)
 {
-	t_point next;
-	t_point to_check;
+	t_xy horz_wall_hit;
+	t_xy to_check;
 
-	next.x = ray->intercept.x;
-	next.y = ray->intercept.y;
-	while (next.x >= 0 && next.x <= WINDOW_WIDTH && next.y >= 0 && next.y <= WINDOW_HEIGHT)
+	horz_wall_hit.x = 0;
+	horz_wall_hit.y = 0;
+	while (intercept.x >= 0 && intercept.x <= WINDOW_WIDTH && intercept.y >= 0 && intercept.y <= WINDOW_HEIGHT)
 	{
-		to_check.x = next.x;
-		to_check.y = next.y;
+		to_check.x = intercept.x;
+		to_check.y = intercept.y;
 		if (ray->facing_to & UP)
 			to_check.y--;
 		if (has_wall_at(map, to_check.x, to_check.y))
 		{
 			ray->found_horz_wall_hit = true;
-			ray->horz_wall_hit.x = next.x;
-			ray->horz_wall_hit.y = next.y;
+			horz_wall_hit.x = intercept.x;
+			horz_wall_hit.y = intercept.y;
 			break;
 		}
 		else
 		{
-			next.x += ray->xstep;
-			next.y += ray->ystep;
+			intercept.x += step.x;
+			intercept.y += step.y;
 		}
 	}
+	return (horz_wall_hit);
 }
 
-t_point find_horz_wall(t_conf *conf, t_ray *ray, const t_player player)
+t_xy find_horz_wall(t_conf *conf, t_ray *ray, const t_player player)
 {
+	//initialize
 	ray->found_horz_wall_hit = 0;
-	ray->horz_wall_hit.x = 0;
-	ray->horz_wall_hit.y = 0;
+	t_xy	horz_wall_hit;	
+	t_xy	step;
+	t_xy	intercept;
+
 	set_facing_to(ray);
-	set_horz_intercepts(ray, player);
-	set_horz_steps(ray);
-	set_horz_wall_hit(conf->map, ray);
-	return (ray->horz_wall_hit);
+	intercept = calc_horz_intercept(ray, player);
+	step = calc_horz_step(ray);
+	horz_wall_hit = calc_horz_wall_hit(conf->map, ray, step, intercept);
+	return (horz_wall_hit);
 }
 
-void set_vert_intercepts(t_ray *ray, const t_player player)
+t_xy calc_vert_intercept(t_ray *ray, const t_player player)
 {
-	ray->intercept.x = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
+	t_xy	intercept;
+
+	intercept.x = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
 	if (ray->facing_to & RIGHT)
-		ray->intercept.x += TILE_SIZE;
-	ray->intercept.y = player.pos.y + (ray->intercept.x - player.pos.x) * tan(ray->angle);
+		intercept.x += TILE_SIZE;
+	intercept.y = player.pos.y + (intercept.x - player.pos.x) * tan(ray->angle);
+	return(intercept);
 }
 
-void set_vert_steps(t_ray *ray)
+t_xy calc_vert_step(t_ray *ray)
 {
-	ray->xstep = TILE_SIZE;
+	t_xy	step;
+
+	step.x = TILE_SIZE;
 	if (ray->facing_to & LEFT)
-		ray->xstep *= -1;
-
-	ray->ystep = TILE_SIZE * tan(ray->angle);
-	if ((ray->facing_to & UP) && ray->ystep > 0)
-		ray->ystep *= -1;
-	if ((ray->facing_to & DOWN) && ray->ystep < 0)
-		ray->ystep *= -1;
+		step.x *= -1;
+	step.y = TILE_SIZE * tan(ray->angle);
+	if ((ray->facing_to & UP) && step.y > 0)
+		step.y *= -1;
+	if ((ray->facing_to & DOWN) && step.y < 0)
+		step.y *= -1;
+	return (step);
 }
 
-void set_vert_wall_hit(const t_map map, t_ray *ray)
+t_xy calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy step, t_xy intercept)
 {
-	t_point next;
-	t_point to_check;
+	t_xy	to_check;
+	t_xy	vert_wall_hit;
 
-	next.x = ray->intercept.x;
-	next.y = ray->intercept.y;
-	while (next.x >= 0 && next.x <= WINDOW_WIDTH && next.y >= 0 && next.y <= WINDOW_HEIGHT)
+	vert_wall_hit.x = 0;
+	vert_wall_hit.y = 0;
+	while (intercept.x >= 0 && intercept.x <= WINDOW_WIDTH && intercept.y >= 0 && intercept.y <= WINDOW_HEIGHT)
 	{
-		to_check.x = next.x;
-		to_check.y = next.y;
+		to_check.x = intercept.x;
+		to_check.y = intercept.y;
 		if (ray->facing_to & LEFT)
 			to_check.x--;
 		if (has_wall_at(map, to_check.x, to_check.y))
 		{
 			ray->found_vert_wall_hit = true;
-			ray->vert_wall_hit.x = next.x;
-			ray->vert_wall_hit.y = next.y;
+			vert_wall_hit.x = intercept.x;
+			vert_wall_hit.y = intercept.y;
 			break;
 		}
 		else
 		{
-			next.x += ray->xstep;
-			next.y += ray->ystep;
+			intercept.x += step.x;
+			intercept.y += step.y;
 		}
 	}
+	return (vert_wall_hit);
 }
 
-t_point find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
+t_xy find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
 {
+	t_xy	vert_wall_hit;
+	t_xy	step;
+	t_xy	intercept;
+
 	ray->found_vert_wall_hit = 0;
-	ray->vert_wall_hit.x = 0;
-	ray->vert_wall_hit.y = 0;
 	set_facing_to(ray);
-	set_vert_intercepts(ray, player);
-	set_vert_steps(ray);
-	set_vert_wall_hit(conf->map, ray);
-	return (ray->vert_wall_hit);
+	intercept = calc_vert_intercept(ray, player);
+	step = calc_vert_step(ray);
+	vert_wall_hit = calc_vert_wall_hit(conf->map, ray, step, intercept);
+	return (vert_wall_hit);
 }
 
-void set_horz_distance(t_ray *ray, const t_player player)
+double calc_horz_distance(t_ray *ray, const t_player player, t_xy horz_wall_hit)
 {
+	double	horz_distance;
+
 	if (ray->found_horz_wall_hit)	
-		ray->horz_distance = distance_between_points(player.pos, ray->horz_wall_hit);
+		horz_distance = distance_between_points(player.pos, horz_wall_hit);
 	else
-		ray->horz_distance = INT_MAX;
+		horz_distance = INT_MAX;
+	return (horz_distance);
 }
 
-void set_vert_distance(t_ray *ray, const t_player player)
+double calc_vert_distance(t_ray *ray, const t_player player, t_xy vert_wall_hit)
 {
+	double	vert_distance;
+
 	if (ray->found_vert_wall_hit)
-		ray->vert_distance = distance_between_points(player.pos, ray->vert_wall_hit);
+		vert_distance = distance_between_points(player.pos, vert_wall_hit);
 	else
-		ray->vert_distance = INT_MAX;
+		vert_distance = INT_MAX;
+	return (vert_distance);
 }
 
-void set_wall_hit(t_ray *ray)
+void set_wall_hit(t_ray *ray, t_xy horz_wall_hit, t_xy vert_wall_hit, double horz_distance, double vert_distance)
 {
-	if (ray->vert_distance < ray->horz_distance)
+	if (vert_distance < horz_distance)
 	{
-		ray->wall_hit = ray->vert_wall_hit;
-		ray->distance = ray->vert_distance;
+		ray->wall_hit_pos = vert_wall_hit;
+		ray->distance = vert_distance;
 		ray->was_hit_vertical = true;	
 	}
 	else
 	{
-		ray->wall_hit = ray->horz_wall_hit;
-		ray->distance = ray->horz_distance;
+		ray->wall_hit_pos = horz_wall_hit;
+		ray->distance = horz_distance;
 	}	
 }
 
 void set_each_ray(t_conf *conf, t_ray *ray, const t_player player)
 {
-	ray->horz_wall_hit = find_horz_wall(conf, ray, player);
-	ray->vert_wall_hit = find_vert_wall(conf, ray, player); 
+	t_xy	horz_wall_hit;
+	t_xy	vert_wall_hit;
+	double	horz_distance;
+	double	vert_distance;
+	
 	//initialize
 	ray->was_hit_vertical = false;
-
-	set_horz_distance(ray, player);
-	set_vert_distance(ray, player);
-	set_wall_hit(ray);
+	horz_wall_hit = find_horz_wall(conf, ray, player);
+	vert_wall_hit = find_vert_wall(conf, ray, player); 
+	horz_distance = calc_horz_distance(ray, player, horz_wall_hit);
+	vert_distance = calc_vert_distance(ray, player, vert_wall_hit);
+	set_wall_hit(ray, horz_wall_hit, vert_wall_hit, horz_distance, vert_distance);
 }
 
 void set_rays(t_conf *conf) {
-	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
-	rayAngle = normalize_angle(rayAngle);
+	double ray_angle;
+	size_t strip_id;
 
-	int strip_id = 0;
+	ray_angle = normalize_angle(conf->player.angle - (FOV_ANGLE / 2));
+	strip_id = 0;
 	while (strip_id < NUM_RAYS)
 	{
-		conf->rays[strip_id].angle = rayAngle;
+		conf->rays[strip_id].angle = ray_angle;
 		set_each_ray(conf, &(conf->rays[strip_id]), conf->player);
-		rayAngle += FOV_ANGLE / NUM_RAYS;
-		rayAngle = normalize_angle(rayAngle);
+		ray_angle += FOV_ANGLE / NUM_RAYS;
+		ray_angle = normalize_angle(ray_angle);
 		strip_id++;
 	}
 }
 
-void render_rays(t_conf *conf)
+void render_rays(t_data *screen, t_player player, t_ray *rays)
 {
-	double rayAngle = conf->player.angle - (FOV_ANGLE / 2);
-	rayAngle = normalize_angle(rayAngle);
+	double ray_angle;
+	size_t strip_id;
 
-	int strip_id = 0;
+	ray_angle = normalize_angle(player.angle - (FOV_ANGLE / 2));
+	strip_id = 0;
 	while (strip_id < NUM_RAYS)
 	{
-		conf->rays[strip_id].angle = rayAngle;
-		line_pixel_put_2(&conf->screen, conf->player, conf->player.pos, conf->rays[strip_id].wall_hit, 0x00FFFF00);
-		rayAngle += FOV_ANGLE / NUM_RAYS;
-		rayAngle = normalize_angle(rayAngle);
+		rays[strip_id].angle = ray_angle;
+		line_pixel_put_2(screen, player, player.pos, rays[strip_id].wall_hit_pos, 0x00FFFF00);
+		ray_angle += FOV_ANGLE / NUM_RAYS;
+		ray_angle = normalize_angle(ray_angle);
 		strip_id++;
 	}
 }
 
-void rect_pixel_put(t_data *screen, t_point start, double width, double height, int color)
+void rect_pixel_put(t_data *screen, t_xy start, double width, double height, size_t color)
 {
-	int i;
-	int j;
+	size_t i;
+	size_t j;
 
 	i = start.y;
 	while (i < start.y + height)
@@ -407,9 +435,9 @@ void rect_pixel_put(t_data *screen, t_point start, double width, double height, 
 	}
 }
 
-void set_ceiling_color(t_conf *conf, const t_3d info_3d, int *i)
+void set_ceiling_color(t_conf *conf, const t_3d info_3d, size_t *i)
 {
-	int y;
+	size_t y;
 
 	y = 0;
 	while (y < info_3d.wall_top)
@@ -419,9 +447,9 @@ void set_ceiling_color(t_conf *conf, const t_3d info_3d, int *i)
 	}
 }
 
-void set_wall_color(t_conf *conf, const t_3d info_3d, int *i)
+void set_wall_color(t_conf *conf, const t_3d info_3d, size_t *i)
 {
-	int y;
+	size_t y;
 	y = info_3d.wall_top;
 	while (y < info_3d.wall_bottom)
 	{
@@ -433,9 +461,9 @@ void set_wall_color(t_conf *conf, const t_3d info_3d, int *i)
 	}
 }
 
-void set_floor_color(t_conf *conf, const t_3d info_3d, int *i)
+void set_floor_color(t_conf *conf, const t_3d info_3d, size_t *i)
 {
-	int y;
+	size_t y;
 
 	y = info_3d.wall_bottom;
 	while (y < WINDOW_HEIGHT)
@@ -448,16 +476,15 @@ void set_floor_color(t_conf *conf, const t_3d info_3d, int *i)
 
 void render_3d_walls(t_conf *conf)
 {
-	int i;	
+	size_t i;	
+	double prep_distance;
 	t_3d info_3d;
 
-	//initialize	
-	info_3d.distance_to_projection = (WINDOW_WIDTH / 2) / tan(FOV_ANGLE / 2);
 	i = 0;
 	while (i < NUM_RAYS)
 	{
-		info_3d.prep_distance = conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle);
-		info_3d.wall_strip_height = (TILE_SIZE / info_3d.prep_distance) * info_3d.distance_to_projection;
+		prep_distance = conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle);
+		info_3d.wall_strip_height = (TILE_SIZE / prep_distance) * DIST_TO_PROJECTION;
 		info_3d.wall_top = (WINDOW_HEIGHT / 2) - (info_3d.wall_strip_height / 2);
 		if (info_3d.wall_top < 0)
 			info_3d.wall_top = 0;
@@ -466,7 +493,7 @@ void render_3d_walls(t_conf *conf)
 			info_3d.wall_bottom = WINDOW_HEIGHT;
 		set_ceiling_color(conf, info_3d, &i);
 		set_wall_color(conf, info_3d, &i);
-		set_floor_color(conf, info_3d, &i);	
+		set_floor_color(conf, info_3d, &i);
 		i++;
 	}
 	render_color_buffer(conf);
@@ -476,12 +503,11 @@ void render(t_conf *conf)
 {
 	conf->screen.img = mlx_new_image(conf->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT);
 	conf->screen.addr = mlx_get_data_addr(conf->screen.img, &conf->screen.bits_per_pixel, &conf->screen.line_length,
-								&conf->screen.endian);
-
+		&conf->screen.endian);
 	render_3d_walls(conf);
-	render_map(conf->map.map, conf);
-	render_rays(conf);
-	render_player(conf);	
+	render_map(&conf->screen, conf->map.map);
+	render_rays(&conf->screen, conf->player, conf->rays);
+	render_player(&conf->screen, conf->player);	
 	mlx_put_image_to_window(conf->mlx_ptr, conf->win_ptr, conf->screen.img, 0, 0);
 }
 
@@ -530,7 +556,7 @@ void init_conf(t_conf *conf)
 	*conf = (t_conf){};
 	conf->player.pos.x = 80;
 	conf->player.pos.y = 80;
-	conf->color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
+	conf->color_buffer = (size_t *)malloc(sizeof(size_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
 }
 
 

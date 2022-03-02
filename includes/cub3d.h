@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/01 17:58:28 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/02 14:53:58 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@
 # define MINIMAP_WIDTH 1500
 # define MINIMAP_HEIGHT 1000
 
+# define DIST_TO_PROJECTION (WINDOW_WIDTH / 2) / tan(FOV_ANGLE / 2)
+
 # define RIGHT 1 << 0
 # define LEFT 1 << 1
 # define UP 1 << 2
@@ -93,39 +95,30 @@ typedef struct	s_data {
 	int		endian;
 }				t_data;
 
-typedef struct s_point {
+typedef struct s_xy {
 	double x;
 	double y;
-}				t_point;
+}				t_xy;
 
 typedef struct s_ray {
-	double angle;
-	t_point intercept;
-	double xstep;
-	double ystep;
-	t_point horz_wall_hit;
-	t_point vert_wall_hit;
-	int found_horz_wall_hit;
-	int found_vert_wall_hit;
-	double horz_distance;
-	double vert_distance;
-	double distance;
-	t_point wall_hit;
-	int was_hit_vertical;
-	unsigned int facing_to;
-	int wall_hit_content;
+	double	angle;
+	double	distance;
+	t_xy	wall_hit_pos;
+	size_t	facing_to;
+	size_t	found_horz_wall_hit;
+	size_t	found_vert_wall_hit;
+	size_t	was_hit_vertical;
+	size_t	wall_hit_content;
 }				t_ray;
 
 typedef struct s_3d {
-	int wall_strip_height;
-	double prep_distance;
-	double distance_to_projection;
-	int wall_top;
-	int wall_bottom;
+	double	wall_strip_height;
+	double	wall_top;
+	double	wall_bottom;
 }			t_3d;
 
 typedef struct s_player {
-	t_point pos;
+	t_xy pos;
 	double pdx;
 	double pdy;
 	double angle;
@@ -139,7 +132,7 @@ typedef struct s_conf {
 	t_images	images;
 	t_data		screen;
 	t_ray		rays[NUM_RAYS];
-	uint32_t	*color_buffer;
+	size_t		*color_buffer;
 }				t_conf;
 
 //utils.c
