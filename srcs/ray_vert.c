@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:58 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 18:28:10 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:28:49 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-t_xy_double	calc_vert_intercept(t_ray *ray, const t_player player)
+t_xy_d	calc_vert_intercept(t_ray *ray, const t_player player)
 {
-	t_xy_double	intercept;
+	t_xy_d	intercept;
 
 	intercept.x = floor(player.pos.x / TILE_SIZE) * TILE_SIZE;
 	if (ray->facing_to & RIGHT)
@@ -25,9 +25,9 @@ t_xy_double	calc_vert_intercept(t_ray *ray, const t_player player)
 	return (intercept);
 }
 
-t_xy_double	calc_vert_step(t_ray *ray)
+t_xy_d	calc_vert_step(t_ray *ray)
 {
-	t_xy_double	step;
+	t_xy_d	step;
 
 	step.x = TILE_SIZE;
 	if (ray->facing_to & LEFT)
@@ -40,14 +40,16 @@ t_xy_double	calc_vert_step(t_ray *ray)
 	return (step);
 }
 
-t_xy_double	calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy_double step, t_xy_double intercept)
+t_xy_d	calc_vert_wall_hit(const t_map map, t_ray *ray,
+	t_xy_d step, t_xy_d intercept)
 {
-	t_xy_double	to_check;
-	t_xy_double	vert_wall_hit;
+	t_xy_d	to_check;
+	t_xy_d	vert_wall_hit;
 
 	vert_wall_hit.x = 0;
 	vert_wall_hit.y = 0;
-	while (intercept.x >= 0 && intercept.x <= WINDOW_WIDTH && intercept.y >= 0 && intercept.y <= WINDOW_HEIGHT)
+	while (intercept.x >= 0 && intercept.x <= WINDOW_WIDTH
+		&& intercept.y >= 0 && intercept.y <= WINDOW_HEIGHT)
 	{
 		to_check.x = intercept.x;
 		to_check.y = intercept.y;
@@ -69,11 +71,11 @@ t_xy_double	calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy_double step, t_
 	return (vert_wall_hit);
 }
 
-t_xy_double	find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
+t_xy_d	find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
 {
-	t_xy_double	vert_wall_hit;
-	t_xy_double	step;
-	t_xy_double	intercept;
+	t_xy_d	vert_wall_hit;
+	t_xy_d	step;
+	t_xy_d	intercept;
 
 	ray->found_vert_wall_hit = 0;
 	set_facing_to(ray);
@@ -83,7 +85,8 @@ t_xy_double	find_vert_wall(t_conf *conf, t_ray *ray, const t_player player)
 	return (vert_wall_hit);
 }
 
-double	calc_vert_distance(t_ray *ray, const t_player player, t_xy_double vert_wall_hit)
+double	calc_vert_distance(t_ray *ray, const t_player player,
+	t_xy_d vert_wall_hit)
 {
 	double	vert_distance;
 

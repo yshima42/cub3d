@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 16:39:55 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 18:34:52 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:30:54 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	set_facing_to(t_ray *ray)
 		ray->facing_to = UP | RIGHT;
 }
 
-double	distance_between_points(t_xy_double start, t_xy_double end)
+double	distance_between_points(t_xy_d start, t_xy_d end)
 {
 	double	dist;
 

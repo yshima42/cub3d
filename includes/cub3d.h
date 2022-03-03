@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 22:40:39 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:16:46 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,10 @@ typedef struct	s_data {
 	int		endian;
 }				t_data;
 
-typedef struct s_xy_double {
+typedef struct s_xy_d {
 	double	x;
 	double	y;
-}				t_xy_double;
+}				t_xy_d;
 
 typedef struct s_xy_size_t {
 	size_t	x;
@@ -73,7 +73,7 @@ typedef struct s_xy_size_t {
 typedef struct s_ray {
 	double	angle;
 	double	distance;
-	t_xy_double	wall_hit_pos;
+	t_xy_d	wall_hit_pos;
 	size_t	facing_to;
 	bool	found_horz_wall_hit;
 	bool	found_vert_wall_hit;
@@ -88,7 +88,7 @@ typedef struct s_3d {
 }			t_3d;
 
 typedef struct s_player {
-	t_xy_double pos;
+	t_xy_d pos;
 	double pdx;
 	double pdy;
 	double angle;
@@ -105,18 +105,21 @@ typedef struct s_conf {
 	size_t		*color_buffer;
 }				t_conf;
 
+//tmp
+int	expose(t_conf *conf);
+
 //graphics.c
 void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, color_t color);
-void	squre_pixel_put(t_data *screen, size_t px, size_t py, size_t size, color_t color);
-void	rect_pixel_put(t_data *screen, t_xy_double start, double width, double height, color_t color);
+void	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, color_t color);
+void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, color_t color);
 void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, color_t color);
 
 //graphics2.c
 void	clear_color_buffer(t_conf *conf, color_t color);
 void	render_color_buffer(t_conf *conf);
 void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, color_t color);
-void	line_pixel_put_2(t_data *screen, t_xy_double start, t_xy_double end, color_t color);
-void	line_pixel_put_3(t_data *screen, t_xy_double start, t_xy_double end, color_t color);
+void	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, color_t color);
+void	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, color_t color);
 
 //map.c
 bool	has_wall_at(t_map map, double x, double y);
@@ -128,35 +131,44 @@ void	move_player(const t_map map, t_player *player, double new_x, double new_y);
 void	render_player(t_data *screen, const t_player player);
 
 //ray_render.c
-void set_wall_hit(t_ray *ray, t_xy_double horz_wall_hit, t_xy_double vert_wall_hit, double horz_distance, double vert_distance);
+void set_wall_hit(t_ray *ray, t_xy_d horz_wall_hit, t_xy_d vert_wall_hit, double horz_distance, double vert_distance);
 void set_each_ray(t_conf *conf, t_ray *ray, const t_player player);
 void set_rays(t_conf *conf);
 void render_rays(t_data *screen, t_player player, t_ray *rays);
 
 //ray_vert.c
-t_xy_double calc_vert_intercept(t_ray *ray, const t_player player);
-t_xy_double calc_vert_step(t_ray *ray);
-t_xy_double calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy_double step, t_xy_double intercept);
-t_xy_double find_vert_wall(t_conf *conf, t_ray *ray, const t_player player);
-double calc_vert_distance(t_ray *ray, const t_player player, t_xy_double vert_wall_hit);
+t_xy_d calc_vert_intercept(t_ray *ray, const t_player player);
+t_xy_d calc_vert_step(t_ray *ray);
+t_xy_d calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy_d step, t_xy_d intercept);
+t_xy_d find_vert_wall(t_conf *conf, t_ray *ray, const t_player player);
+double calc_vert_distance(t_ray *ray, const t_player player, t_xy_d vert_wall_hit);
 
 //ray_horz.c
-t_xy_double calc_horz_intercept(t_ray *ray, const t_player player);
-t_xy_double calc_horz_step(t_ray *ray);
-t_xy_double calc_horz_wall_hit(const t_map map, t_ray *ray, t_xy_double step, t_xy_double intercept);
-t_xy_double find_horz_wall(t_conf *conf, t_ray *ray, const t_player player);
-double calc_horz_distance(t_ray *ray, const t_player player, t_xy_double horz_wall_hit);
+t_xy_d calc_horz_intercept(t_ray *ray, const t_player player);
+t_xy_d calc_horz_step(t_ray *ray);
+t_xy_d calc_horz_wall_hit(const t_map map, t_ray *ray, t_xy_d step, t_xy_d intercept);
+t_xy_d find_horz_wall(t_conf *conf, t_ray *ray, const t_player player);
+double calc_horz_distance(t_ray *ray, const t_player player, t_xy_d horz_wall_hit);
 
 //ray_utils.c
 double normalize_angle(double angle);
 void set_facing_to(t_ray *ray);
-double distance_between_points(t_xy_double start, t_xy_double end);
+double distance_between_points(t_xy_d start, t_xy_d end);
 
 //wall.c
 void set_ceiling_color(t_conf *conf, const t_3d info_3d, size_t *i);
 void set_wall_color(t_conf *conf, const t_3d info_3d, size_t *i);
 void set_floor_color(t_conf *conf, const t_3d info_3d, size_t *i);
 void render_3d_walls(t_conf *conf);
+
+//deal_key.c
+int	deal_key(int key, t_conf *conf);
+
+//deal_key2.c
+void	a_key(t_map map, t_player *player);
+void	d_key(t_map map, t_player *player);
+void	w_key(t_map map, t_player *player);
+void	s_key(t_map map, t_player *player);
 
 //utils.c
 void	array_loop(char **map, t_conf *conf, char *f(char c, t_conf *conf));

@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 16:09:27 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 15:06:59 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:20:32 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ char	**ft_arrayfree(char **tab)
 	}
 	free(tab);
 	return (NULL);
+}
+
+int	free_all_exit(t_conf *conf)
+{
+	free(conf->color_buffer);
+	exit(0);
 }
 
 /* int	free_all_exit(t_conf *conf)

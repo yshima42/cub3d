@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:41 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 18:42:12 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:21:57 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ void	render_color_buffer(t_conf *conf)
 		y = 0;
 		while (y < WINDOW_HEIGHT)
 		{
-			my_mlx_pixel_put(&conf->screen, x, y, conf->color_buffer[(WINDOW_WIDTH * y) + x]);
+			my_mlx_pixel_put(&conf->screen, x, y,
+				conf->color_buffer[(WINDOW_WIDTH * y) + x]);
 			y++;
 		}
 		x++;
@@ -60,10 +61,11 @@ void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, c
 	}
 }
 
-void	line_pixel_put_2(t_data *screen, t_xy_double start, t_xy_double end, color_t color)
+void
+	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, color_t color)
 {
-	t_xy_double	line;
-	t_xy_double	delta;
+	t_xy_d	line;
+	t_xy_d	delta;
 	size_t	len;
 	double	rad;
 	size_t	i;
@@ -83,10 +85,11 @@ void	line_pixel_put_2(t_data *screen, t_xy_double start, t_xy_double end, color_
 }
 
 //there is bug I think (some lines come)
-void	line_pixel_put_3(t_data *screen, t_xy_double start, t_xy_double end, color_t color)
+void
+	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, color_t color)
 {
-	t_xy_double	inc;
-	t_xy_double	delta;
+	t_xy_d	inc;
+	t_xy_d	delta;
 	size_t	side_len;
 	size_t	i;
 

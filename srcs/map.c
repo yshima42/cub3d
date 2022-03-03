@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:46 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 21:32:19 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:23:07 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ bool	is_inside_map(t_map map, double x, double y)
 
 void	render_map(t_data *screen, char **map)
 {
-	size_t	y;
-	size_t	x;
-	color_t	tile_color;
+	size_t		y;
+	size_t		x;
+	t_xy_size_t	mini_pos;
+	color_t		tile_color;
 
 	y = 0;
 	while (map[y])
@@ -49,12 +50,10 @@ void	render_map(t_data *screen, char **map)
 				tile_color = 0x000000;
 			else
 				tile_color = 0xFFFFFFFF;
-			squre_pixel_put(
-				screen, x * TILE_SIZE * MINIMAP_SCALE,
-				y * TILE_SIZE * MINIMAP_SCALE,
-				TILE_SIZE * MINIMAP_SCALE,
-				tile_color
-				);
+			mini_pos.x = x * TILE_SIZE * MINIMAP_SCALE;
+			mini_pos.y = y * TILE_SIZE * MINIMAP_SCALE;
+			squre_pixel_put(screen, mini_pos,
+				TILE_SIZE * MINIMAP_SCALE, tile_color);
 			x++;
 		}
 		y++;

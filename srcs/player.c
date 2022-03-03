@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:49 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 18:10:43 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:23:40 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-void	move_player(const t_map map, t_player *player, double new_x, double new_y)
+void
+	move_player(const t_map map, t_player *player, double new_x, double new_y)
 {
 	if (!has_wall_at(map, new_x, new_y))
 	{
@@ -29,6 +30,7 @@ void	render_player(t_data *screen, const t_player player)
 
 	mini_pos.x = player.pos.x * MINIMAP_SCALE;
 	mini_pos.y = player.pos.y * MINIMAP_SCALE;
-	circle_pixel_put(screen, mini_pos, PLAYER_SIZE * MINIMAP_SCALE / 2, 0x00FF0000);
+	circle_pixel_put(screen, mini_pos,
+		PLAYER_SIZE / 2 * MINIMAP_SCALE, 0x00FF0000);
 	line_pixel_put(screen, mini_pos, player.angle, 30, 0x00FF0000);
 }

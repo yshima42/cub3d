@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:36 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 18:38:42 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:01:16 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,20 @@ void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, color_t color)
 	*(unsigned int *)dst = color;
 }
 
-void	squre_pixel_put(t_data *screen, size_t px, size_t py, size_t size, color_t color)
+void
+	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, color_t color)
 {
 	size_t	i;
 	size_t	j;
 	color_t	c_color;
 
-	i = px;
-	while (i < px + size)
+	i = pos.x;
+	while (i < pos.x + size)
 	{
-		j = py;
-		while (j < py + size)
+		j = pos.y;
+		while (j < pos.y + size)
 		{
-			if (i == px || j == py)
+			if (i == pos.x || j == pos.y)
 				c_color = 0x808080;
 			else
 				c_color = color;
@@ -45,7 +46,7 @@ void	squre_pixel_put(t_data *screen, size_t px, size_t py, size_t size, color_t 
 	}
 }
 
-void	rect_pixel_put(t_data *screen, t_xy_double start, double width, double height, color_t color)
+void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, color_t color)
 {
 	size_t	i;
 	size_t	j;

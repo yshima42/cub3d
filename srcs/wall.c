@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:51 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 15:40:30 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/03 23:50:20 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,16 @@ void	render_3d_walls(t_conf *conf)
 	i = 0;
 	while (i < NUM_RAYS)
 	{
-		prep_distance = conf->rays[i].distance * cos(conf->rays[i].angle - conf->player.angle);
-		info_3d.wall_strip_height = (TILE_SIZE / prep_distance) * DIST_TO_PROJECTION;
-		info_3d.wall_top = (WINDOW_HEIGHT / 2) - (info_3d.wall_strip_height / 2);
+		prep_distance = conf->rays[i].distance
+			* cos(conf->rays[i].angle - conf->player.angle);
+		info_3d.wall_strip_height = (TILE_SIZE / prep_distance)
+			* DIST_TO_PROJECTION;
+		info_3d.wall_top = (WINDOW_HEIGHT / 2)
+			- (info_3d.wall_strip_height / 2);
 		if (info_3d.wall_top < 0)
 			info_3d.wall_top = 0;
-		info_3d.wall_bottom = (WINDOW_HEIGHT / 2) + (info_3d.wall_strip_height / 2);
+		info_3d.wall_bottom = (WINDOW_HEIGHT / 2)
+			+ (info_3d.wall_strip_height / 2);
 		if (info_3d.wall_bottom > WINDOW_HEIGHT)
 			info_3d.wall_bottom = WINDOW_HEIGHT;
 		set_ceiling_color(conf, info_3d, &i);
