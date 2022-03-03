@@ -14,3 +14,10 @@ void print_angle(t_conf *conf)
 	printf("pdx: %f\n", conf->player.pdx);
 	printf("pdy: %f\n", conf->player.pdy);
 }
+
+void print_array(t_conf *conf)
+{
+	for (size_t y = 0; y < conf->map.width; y++)
+		for (size_t x = 0; x < conf->map.height; x++)
+			printf("%c\n", conf->map.map[y][x]);
+}

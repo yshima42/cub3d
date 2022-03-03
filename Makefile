@@ -1,5 +1,6 @@
 CC				= 	gcc
-CFLAGS			= 	-Wall -Wextra -Werror -g
+CFLAGS			= 	-Wall -Wextra -Werror
+DEBUG_FLAGS		=	-g
 NAME			= 	cub3d
 INCLUDES		= 	includes
 SRCS_PATH		= 	./srcs/
@@ -7,7 +8,9 @@ BONUS_PATH		= 	./srcs_bonus/
 LIBFT_PATH		= 	./libft/
 MLX_PATH		= 	./minilibx-linux/
 SRCS_FILES    	= 	$(SRCS_PATH)main.c $(SRCS_PATH)error.c $(SRCS_PATH)free.c $(SRCS_PATH)map_check.c $(SRCS_PATH)utils.c \
-					$(SRCS_PATH)mlx.c $(SRCS_PATH)sl_utils.c $(SRCS_PATH)test.c
+					$(SRCS_PATH)mlx.c $(SRCS_PATH)sl_utils.c $(SRCS_PATH)test.c $(SRCS_PATH)graphics.c $(SRCS_PATH)graphics2.c \
+					$(SRCS_PATH)map.c $(SRCS_PATH)player.c $(SRCS_PATH)ray_render.c $(SRCS_PATH)ray_vert.c $(SRCS_PATH)ray_horz.c \
+					$(SRCS_PATH)ray_utils.c $(SRCS_PATH)wall.c
 BONUS_FILES    	= 	$(BONUS_PATH)main_bonus.c $(BONUS_PATH)utils_bonus.c $(BONUS_PATH)map_check_bonus.c \
 					$(BONUS_PATH)free_bonus.c $(BONUS_PATH)sl_utils_bonus.c $(BONUS_PATH)player_move_bonus.c \
 					$(BONUS_PATH)error_bonus.c $(BONUS_PATH)mlx_bonus.c $(BONUS_PATH)animation_bonus.c \

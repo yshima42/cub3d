@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 16:13:56 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/02/23 20:36:06 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/03 22:40:30 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,11 @@ char	**lst_to_array(t_list *buf, size_t height)
 	i = 0;
 	while (t_buf)
 	{
-		map[i] = ft_strdup(t_buf->content);
+		map[i] = ft_strdup((char *)t_buf->content);
 		t_buf = t_buf->next;
 		i++;
 	}
 	map[i] = NULL;
-	ft_lstclear(&buf, free);
 	return (map);
 }
 
