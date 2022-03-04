@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:36 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:01:16 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 13:11:06 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, color_t color)
+void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, t_color color)
 {
 	char	*dst;
 
@@ -23,11 +23,11 @@ void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, color_t color)
 }
 
 void
-	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, color_t color)
+	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, t_color color)
 {
 	size_t	i;
 	size_t	j;
-	color_t	c_color;
+	t_color	c_color;
 
 	i = pos.x;
 	while (i < pos.x + size)
@@ -46,7 +46,7 @@ void
 	}
 }
 
-void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, color_t color)
+void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, t_color color)
 {
 	size_t	i;
 	size_t	j;
@@ -64,7 +64,7 @@ void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, c
 	}
 }
 
-void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, color_t color)
+void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, t_color color)
 {
 	size_t	x;
 	size_t	y;

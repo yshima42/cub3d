@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:16:46 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 13:11:05 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,17 +109,17 @@ typedef struct s_conf {
 int	expose(t_conf *conf);
 
 //graphics.c
-void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, color_t color);
-void	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, color_t color);
-void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, color_t color);
-void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, color_t color);
+void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, t_color color);
+void	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, t_color color);
+void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, t_color color);
+void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, t_color color);
 
 //graphics2.c
-void	clear_color_buffer(t_conf *conf, color_t color);
+void	clear_color_buffer(t_conf *conf, t_color color);
 void	render_color_buffer(t_conf *conf);
-void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, color_t color);
-void	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, color_t color);
-void	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, color_t color);
+void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, t_color color);
+void	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, t_color color);
+void	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, t_color color);
 
 //map.c
 bool	has_wall_at(t_map map, double x, double y);

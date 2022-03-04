@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 23:17:56 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/03 23:29:28 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 13:46:32 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ void	right_key(t_player *player)
 	player->pdy = sin(player->angle);
 }
 
+void	esc_key(t_conf *conf)
+{
+	free_all_exit(conf);
+}
+
 int	deal_key(int key, t_conf *conf)
 {
 	if (key == A_KEY)
@@ -44,6 +49,8 @@ int	deal_key(int key, t_conf *conf)
 		left_key(&conf->player);
 	else if (key == RIGHT_KEY)
 		right_key(&conf->player);
+	else if (key == ESC_KEY)
+		esc_key(conf);
 	set_rays(conf);
 	render(conf);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:41 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:57:12 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 13:43:43 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "../libft/libft.h"
 #include "../includes/cub3d.h"
 
-void	clear_color_buffer(t_conf *conf, color_t color)
+void	clear_color_buffer(t_conf *conf, t_color color)
 {
 	size_t	i;
 
@@ -45,7 +45,7 @@ void	render_color_buffer(t_conf *conf)
 	}
 }
 
-void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, color_t color)
+void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, t_color color)
 {
 	size_t	x;
 	size_t	y;
@@ -62,7 +62,7 @@ void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, c
 }
 
 void
-	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, color_t color)
+	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, t_color color)
 {
 	t_xy_d	line;
 	t_xy_d	delta;
@@ -86,7 +86,7 @@ void
 
 //there is bug I think (some lines come)
 void
-	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, color_t color)
+	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, t_color color)
 {
 	t_xy_d	inc;
 	t_xy_d	delta;

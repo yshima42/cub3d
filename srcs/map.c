@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:46 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:57:27 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 13:11:08 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	render_map(t_data *screen, char **map)
 	size_t		y;
 	size_t		x;
 	t_xy_size_t	mini_pos;
-	color_t		tile_color;
+	t_color		tile_color;
 
 	y = 0;
 	while (map[y])
