@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 13:11:05 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:17:36 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,9 @@ char	*invalid_char_check(char c, t_conf *conf);
 char	*inmap_char_count(char c, t_conf *conf);
 void	n_char_check(char **map, t_conf *conf);
 
+//map_check2.c
+void	size_check(t_conf *conf);
+
 //error_output.c
 void	map_error_output(char **map, char *output);
 void	perror_exit(char *error_message);
@@ -201,11 +204,7 @@ int		key_hook(int keycode, t_conf *conf);
 void	hook_loop_mlx(t_conf *conf);
 void	display_mlx(t_conf *conf);
 
-//sl_utils.c
-void	*chr_to_imgptr(char c, t_conf *conf);
-void	chip_set(t_conf *conf);
-void	step_counter(t_conf *conf);
-void	size_check(t_conf *conf);
+
 
 //main.c
 void render(t_conf *conf);
