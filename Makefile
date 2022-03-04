@@ -1,3 +1,18 @@
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+# MacOS での処理
+LIBS += -I/usr/X11/include -Lminilibx-linux -lmlx_Darwin -L/usr/X11/include/../lib -lXext -lX11
+else
+ifeq ($(UNAME), Linux)
+# Linux での処理
+LIBS += -Lminilibx-linux -lmlx -Iminilibx-linux -lXext -lX11 -lm
+else
+# Cygwin での処理
+LIBS += -lglut32 -lglu32 -lopengl32 -lm
+endif
+endif
+
 CC				= 	gcc
 CFLAGS			= 	-Wall -Wextra -Werror
 NAME			= 	cub3d
@@ -35,7 +50,7 @@ $(MLX_PATH):
 $(NAME):		$(MLX_PATH) $(SRCS_OBJS)
 				$(LIBFTMAKE)
 				$(MLXMAKE)
-				$(CC) $(CFLAGS) $(SRCS_OBJS) $(LIBFTFLAG) $(MLXFLAG) -o $(NAME)
+				$(CC) $(CFLAGS) $(SRCS_OBJS) $(LIBFTFLAG) $(LIBS) -o $(NAME)
 
 lib:
 				$(LIBFTMAKE)
