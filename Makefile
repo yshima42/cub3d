@@ -7,9 +7,6 @@ else
 ifeq ($(UNAME), Linux)
 # Linux での処理
 LIBS += -Lminilibx-linux -lmlx -Iminilibx-linux -lXext -lX11 -lm
-else
-# Cygwin での処理
-LIBS += -lglut32 -lglu32 -lopengl32 -lm
 endif
 endif
 
