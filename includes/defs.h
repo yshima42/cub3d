@@ -4,7 +4,7 @@
 # define MINIMAP_SCALE 1
 # define TILE_SIZE 			32 * MINIMAP_SCALE
 # define SCREEN_SIZE 		20
-# define PLAYER_SIZE 		8 * MINIMAP_SCALE
+# define PLAYER_SIZE 		8
 
 #define FOV_ANGLE (60 * (M_PI / 180))
 #define TWO_PI M_PI * 2

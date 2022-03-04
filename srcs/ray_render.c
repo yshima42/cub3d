@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:56:20 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:40:50 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:58:39 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,18 @@ void	set_rays(t_conf *conf)
 
 void	render_rays(t_data *screen, t_player player, t_ray *rays)
 {
-	double	ray_angle;
 	size_t	strip_id;
 	t_xy_d	mini_pos;
+	t_xy_d	mini_hit_pos;
 
-	ray_angle = normalize_angle(player.angle - (FOV_ANGLE / 2));
-	mini_pos.x = player.pos.x * MINIMAP_SCALE;
-	mini_pos.y = player.pos.y * MINIMAP_SCALE;
+	mini_pos.x = player.pos.x;
+	mini_pos.y = player.pos.y;	
 	strip_id = 0;
 	while (strip_id < NUM_RAYS)
 	{
-		rays[strip_id].angle = ray_angle;
-		line_pixel_put_2(screen, mini_pos, rays[strip_id].wall_hit_pos, 0x00FFFF00);
-		ray_angle += FOV_ANGLE / NUM_RAYS;
-		ray_angle = normalize_angle(ray_angle);
+		mini_hit_pos.x = rays[strip_id].wall_hit_pos.x;
+		mini_hit_pos.y = rays[strip_id].wall_hit_pos.y;
+		line_pixel_put_2(screen, mini_pos, mini_hit_pos, 0x00FFFF00);
 		strip_id++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:49 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:23:40 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:57:56 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ void	render_player(t_data *screen, const t_player player)
 {
 	t_xy_size_t	mini_pos;
 
-	mini_pos.x = player.pos.x * MINIMAP_SCALE;
-	mini_pos.y = player.pos.y * MINIMAP_SCALE;
+	mini_pos.x = player.pos.x;
+	mini_pos.y = player.pos.y;
 	circle_pixel_put(screen, mini_pos,
-		PLAYER_SIZE / 2 * MINIMAP_SCALE, 0x00FF0000);
+		PLAYER_SIZE / 2, 0x00FF0000);
 	line_pixel_put(screen, mini_pos, player.angle, 30, 0x00FF0000);
 }

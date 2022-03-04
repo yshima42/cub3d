@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:46 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:23:07 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:57:27 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ void	render_map(t_data *screen, char **map)
 				tile_color = 0x000000;
 			else
 				tile_color = 0xFFFFFFFF;
-			mini_pos.x = x * TILE_SIZE * MINIMAP_SCALE;
-			mini_pos.y = y * TILE_SIZE * MINIMAP_SCALE;
+			mini_pos.x = x * TILE_SIZE;
+			mini_pos.y = y * TILE_SIZE;
 			squre_pixel_put(screen, mini_pos,
-				TILE_SIZE * MINIMAP_SCALE, tile_color);
+				TILE_SIZE, tile_color);
 			x++;
 		}
 		y++;

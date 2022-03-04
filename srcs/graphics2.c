@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:41 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 00:21:57 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 00:57:12 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, c
 	i = 0;
 	while (i < len)
 	{
-		x = pos.x * MINIMAP_SCALE + i * cos(angle);
-		y = pos.y * MINIMAP_SCALE + i * sin(angle);
+		x = pos.x + i * cos(angle);
+		y = pos.y + i * sin(angle);
 		my_mlx_pixel_put(screen, x, y, color);
 		i++;
 	}
@@ -77,8 +77,8 @@ void
 	i = 0;
 	while (i < len)
 	{
-		line.x = start.x * MINIMAP_SCALE + i * cos(rad);
-		line.y = start.y * MINIMAP_SCALE + i * sin(rad);
+		line.x = start.x + i * cos(rad);
+		line.y = start.y + i * sin(rad);
 		my_mlx_pixel_put(screen, round(line.x), round(line.y), color);
 		i++;
 	}
