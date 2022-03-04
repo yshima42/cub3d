@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:09:02 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:18:52 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:34:50 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ t_xy_d	calc_horz_wall_hit(const t_map map, t_ray *ray,
 
 	horz_wall_hit.x = 0;
 	horz_wall_hit.y = 0;
-	while (intercept.x >= 0 && intercept.x <= WINDOW_WIDTH
-		&& intercept.y >= 0 && intercept.y <= WINDOW_HEIGHT)
+	while (is_inside_map(map, intercept.x, intercept.y))
 	{
 		to_check.x = intercept.x;
 		to_check.y = intercept.y;

@@ -6,12 +6,12 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/01 21:56:57 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:17:36 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:56:37 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SO_LONG_H
-# define SO_LONG_H
+#ifndef CUB3D_H
+# define CUB3D_H
 
 # include <stdint.h>
 # include <math.h>
@@ -30,7 +30,6 @@
 # define IMG_EXIT 			"images/exit.xpm"
 # define IMG_PLAYER 		"images/player1.xpm"
 # define IMG_PLAYER_2		"images/player2.xpm"
-
 
 typedef struct s_map
 {
@@ -52,7 +51,7 @@ typedef struct s_images
 	int		size;
 }	t_images;
 
-typedef struct	s_data {
+typedef struct s_data {
 	void	*img;
 	char	*addr;
 	int		bits_per_pixel;
@@ -69,6 +68,11 @@ typedef struct s_xy_size_t {
 	size_t	x;
 	size_t	y;
 }				t_xy_size_t;
+
+typedef struct s_rect {
+	double	width;
+	double	height;
+}				t_rect;
 
 typedef struct s_ray {
 	double	angle;
@@ -88,10 +92,10 @@ typedef struct s_3d {
 }			t_3d;
 
 typedef struct s_player {
-	t_xy_d pos;
-	double pdx;
-	double pdy;
-	double angle;
+	t_xy_d	pos;
+	double	pdx;
+	double	pdy;
+	double	angle;
 }	t_player;
 
 typedef struct s_conf {
@@ -106,63 +110,75 @@ typedef struct s_conf {
 }				t_conf;
 
 //tmp
-int	expose(t_conf *conf);
+int		expose(t_conf *conf);
 
 //graphics.c
 void	my_mlx_pixel_put(t_data *data, size_t x, size_t y, t_color color);
-void	squre_pixel_put(t_data *screen, t_xy_size_t pos, size_t size, t_color color);
-void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, t_color color);
-void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, t_color color);
+void	squre_pixel_put(t_data *screen, t_xy_size_t pos,
+			size_t size, t_color color);
+void	rect_pixel_put(t_data *screen, t_xy_d start,
+			t_rect rect, t_color color);
+void	circle_pixel_put(t_data *screen, t_xy_size_t pos,
+			size_t radius, t_color color);
 
 //graphics2.c
 void	clear_color_buffer(t_conf *conf, t_color color);
 void	render_color_buffer(t_conf *conf);
-void	line_pixel_put(t_data *screen, t_xy_size_t pos, double angle, double len, t_color color);
-void	line_pixel_put_2(t_data *screen, t_xy_d start, t_xy_d end, t_color color);
-void	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, t_color color);
+void	line_pixel_put(t_data *screen, t_xy_size_t pos,
+			double angle, double len, t_color color);
+void	line_pixel_put_2(t_data *screen, t_xy_d start,
+			t_xy_d end, t_color color);
+void	line_pixel_put_3(t_data *screen, t_xy_d start,
+			t_xy_d end, t_color color);
 
 //map.c
 bool	has_wall_at(t_map map, double x, double y);
-bool	is_inside_map(t_map map, double x, double y); 
+bool	is_inside_map(t_map map, double x, double y);
 void	render_map(t_data *screen, char **map);
 
 //player.c
-void	move_player(const t_map map, t_player *player, double new_x, double new_y);
+void	move_player(const t_map map, t_player *player,
+			double new_x, double new_y);
 void	render_player(t_data *screen, const t_player player);
 
 //ray_render.c
-void set_wall_hit(t_ray *ray, t_xy_d horz_wall_hit, t_xy_d vert_wall_hit, double horz_distance, double vert_distance);
-void set_each_ray(t_conf *conf, t_ray *ray, const t_player player);
-void set_rays(t_conf *conf);
-void render_rays(t_data *screen, t_player player, t_ray *rays);
+void	set_wall_hit(t_ray *ray, t_xy_d horz_wall_hit,
+			t_xy_d vert_wall_hit, t_xy_d dist);
+void	set_each_ray(t_conf *conf, t_ray *ray, const t_player player);
+void	set_rays(t_conf *conf);
+void	render_rays(t_data *screen, t_player player, t_ray *rays);
 
 //ray_vert.c
-t_xy_d calc_vert_intercept(t_ray *ray, const t_player player);
-t_xy_d calc_vert_step(t_ray *ray);
-t_xy_d calc_vert_wall_hit(const t_map map, t_ray *ray, t_xy_d step, t_xy_d intercept);
-t_xy_d find_vert_wall(t_conf *conf, t_ray *ray, const t_player player);
-double calc_vert_distance(t_ray *ray, const t_player player, t_xy_d vert_wall_hit);
+t_xy_d	calc_vert_intercept(t_ray *ray, const t_player player);
+t_xy_d	calc_vert_step(t_ray *ray);
+t_xy_d	calc_vert_wall_hit(const t_map map, t_ray *ray,
+			t_xy_d step, t_xy_d intercept);
+t_xy_d	find_vert_wall(t_conf *conf, t_ray *ray, const t_player player);
+double	calc_vert_distance(t_ray *ray, const t_player player,
+			t_xy_d vert_wall_hit);
 
 //ray_horz.c
-t_xy_d calc_horz_intercept(t_ray *ray, const t_player player);
-t_xy_d calc_horz_step(t_ray *ray);
-t_xy_d calc_horz_wall_hit(const t_map map, t_ray *ray, t_xy_d step, t_xy_d intercept);
-t_xy_d find_horz_wall(t_conf *conf, t_ray *ray, const t_player player);
-double calc_horz_distance(t_ray *ray, const t_player player, t_xy_d horz_wall_hit);
+t_xy_d	calc_horz_intercept(t_ray *ray, const t_player player);
+t_xy_d	calc_horz_step(t_ray *ray);
+t_xy_d	calc_horz_wall_hit(const t_map map, t_ray *ray,
+			t_xy_d step, t_xy_d intercept);
+t_xy_d	find_horz_wall(t_conf *conf, t_ray *ray, const t_player player);
+double	calc_horz_distance(t_ray *ray, const t_player player,
+			t_xy_d horz_wall_hit);
 
 //ray_utils.c
-double normalize_angle(double angle);
-void set_facing_to(t_ray *ray);
-double distance_between_points(t_xy_d start, t_xy_d end);
+double	normalize_angle(double angle);
+void	set_facing_to(t_ray *ray);
+double	distance_between_points(t_xy_d start, t_xy_d end);
 
 //wall.c
-void set_ceiling_color(t_conf *conf, const t_3d info_3d, size_t *i);
-void set_wall_color(t_conf *conf, const t_3d info_3d, size_t *i);
-void set_floor_color(t_conf *conf, const t_3d info_3d, size_t *i);
-void render_3d_walls(t_conf *conf);
+void	set_ceiling_color(t_conf *conf, const t_3d info_3d, size_t *i);
+void	set_wall_color(t_conf *conf, const t_3d info_3d, size_t *i);
+void	set_floor_color(t_conf *conf, const t_3d info_3d, size_t *i);
+void	render_3d_walls(t_conf *conf);
 
 //deal_key.c
-int	deal_key(int key, t_conf *conf);
+int		deal_key(int key, t_conf *conf);
 
 //deal_key2.c
 void	a_key(t_map map, t_player *player);
@@ -204,9 +220,7 @@ int		key_hook(int keycode, t_conf *conf);
 void	hook_loop_mlx(t_conf *conf);
 void	display_mlx(t_conf *conf);
 
-
-
 //main.c
-void render(t_conf *conf);
+void	render(t_conf *conf);
 
 #endif

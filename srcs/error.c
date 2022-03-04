@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/30 16:08:59 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 14:22:05 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:35:37 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	error_mlx(t_conf *conf)
 {
 	(void)conf;
 	ft_putstr_fd("Error\nSomething is wring in mlx function", 2);
-	//free_all_exit(conf);
+	free_all_exit(conf);
 }
 
 int	extension_check(char *filename)

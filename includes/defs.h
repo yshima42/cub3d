@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 13:08:48 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 13:11:01 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:47:40 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define LEFT 1 << 1
 # define UP 1 << 2
 # define DOWN 1 << 3
-#define NUM_RAYS WINDOW_WIDTH / WALL_STRIP_WIDTH
+# define NUM_RAYS WINDOW_WIDTH / WALL_STRIP_WIDTH
 typedef uint32_t t_color;
 
 #endif /* DEFS */

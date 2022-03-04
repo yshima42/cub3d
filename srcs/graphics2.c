@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:41 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 13:43:43 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:46:58 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ void
 	}
 }
 
-//there is bug I think (some lines come)
 void
 	line_pixel_put_3(t_data *screen, t_xy_d start, t_xy_d end, t_color color)
 {

@@ -46,7 +46,7 @@ $(MLX_PATH):
 
 $(NAME):		$(MLX_PATH) $(SRCS_OBJS)
 				$(LIBFTMAKE)
-				#$(MLXMAKE)
+				$(MLXMAKE)
 				$(CC) $(CFLAGS) $(SRCS_OBJS) $(LIBFTFLAG) $(LIBS) -o $(NAME)
 
 lib:

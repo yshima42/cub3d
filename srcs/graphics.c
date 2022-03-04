@@ -6,7 +6,7 @@
 /*   By: yshimazu <yshimazu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 15:08:36 by yshimazu          #+#    #+#             */
-/*   Updated: 2022/03/04 13:11:06 by yshimazu         ###   ########.fr       */
+/*   Updated: 2022/03/04 14:40:22 by yshimazu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,16 @@ void
 	}
 }
 
-void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, t_color color)
+void	rect_pixel_put(t_data *screen, t_xy_d start, t_rect rect, t_color color)
 {
 	size_t	i;
 	size_t	j;
 
 	i = start.y;
-	while (i < start.y + height)
+	while (i < start.y + rect.height)
 	{
 		j = start.x;
-		while (j < start.x + width)
+		while (j < start.x + rect.width)
 		{
 			my_mlx_pixel_put(screen, j, i, color);
 			j++;
@@ -64,7 +64,8 @@ void	rect_pixel_put(t_data *screen, t_xy_d start, double width, double height, t
 	}
 }
 
-void	circle_pixel_put(t_data *screen, t_xy_size_t pos, size_t radius, t_color color)
+void	circle_pixel_put(t_data *screen, t_xy_size_t pos,
+	size_t radius, t_color color)
 {
 	size_t	x;
 	size_t	y;
