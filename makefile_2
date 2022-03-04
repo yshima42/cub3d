@@ -1,5 +1,6 @@
 CC				= 	gcc
 CFLAGS			= 	-Wall -Wextra -Werror
+DEBUG_FLAGS		=	-g
 NAME			= 	cub3d
 INCLUDES		= 	includes
 SRCS_PATH		= 	./srcs/
@@ -24,8 +25,8 @@ endif
 LIBFTMAKE		= 	$(MAKE) -C $(LIBFT_PATH)
 LIBFTFLAG		= 	-L$(LIBFT_PATH) -lft
 MLXMAKE			= 	$(MAKE) -C $(MLX_PATH)
-MLXFLAG			= 	-Lminilibx-linux -lmlx -Iminilibx-linux -lXext -lX11 -lm
-GITMLX			= 	git clone https://github.com/42Paris/minilibx-linux.git minilibx-linux
+MLXFLAG			= 	-Lminilibx_linux -lmlx -Imlx_linux -lXext -lX11 -lm
+GITMLX			= 	git clone https://github.com/42Paris/minilibx-linux.git
 
 all:			$(NAME)
 
@@ -36,6 +37,7 @@ $(NAME):		$(MLX_PATH) $(SRCS_OBJS)
 				$(LIBFTMAKE)
 				$(MLXMAKE)
 				$(CC) $(CFLAGS) $(SRCS_OBJS) $(LIBFTFLAG) $(MLXFLAG) -o $(NAME)
+				#-I/usr/X11/include -Lminilibx-linux -lmlx_Darwin -L/usr/X11/include/../lib -lXext -lX11
 
 lib:
 				$(LIBFTMAKE)

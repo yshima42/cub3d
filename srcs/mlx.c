@@ -32,7 +32,7 @@ void	array_to_screan(char **map, t_conf *conf)
 	}
 }
 
-void	display_mlx(t_conf *conf)
+/* void	display_mlx(t_conf *conf)
 {
 	int	size_x;
 	int	size_y;
@@ -45,7 +45,7 @@ void	display_mlx(t_conf *conf)
 	if (conf->map.width > SCREEN_SIZE)
 		size_x = SCREEN_SIZE * (TILE_SIZE + 1);
 	array_to_screan(conf->map.map, conf);
-}
+} */
 
 int	expose(t_conf *conf)
 {
